@@ -2,8 +2,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
-const authRoutes = require("./routes/authRoutes"); // Подключаем маршруты
+const authRoutes = require("./routes/authRoutes");
 const theoryRoutes = require("./routes/theoryRoutes.js");
+const tasksRoutes = require("./routes/tasksRoutes"); // Подключаем маршруты для заданий
 
 dotenv.config();
 connectDB();
@@ -15,6 +16,7 @@ app.use(cors());
 // Подключаем маршруты
 app.use("/api/auth", authRoutes);
 app.use("/api/theory", theoryRoutes);
+app.use("/api/tasks", tasksRoutes); // Добавляем маршруты для заданий
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
