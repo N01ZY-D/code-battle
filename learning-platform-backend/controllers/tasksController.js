@@ -13,16 +13,14 @@ const getAllTasks = async (req, res) => {
 
 // Получение задания по ID
 const getTaskById = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const task = await Task.findById(id);
+    const task = await Task.findById(req.params.taskId); // Предполагаем, что используем Mongoose
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: "Задание не найдено" });
     }
     res.json(task);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Ошибка при загрузке задания" });
   }
 };
 

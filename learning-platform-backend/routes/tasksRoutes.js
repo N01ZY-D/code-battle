@@ -7,6 +7,8 @@ const router = express.Router();
 router.get("/", getAllTasks);
 
 // Маршрут для получения конкретного задания по ID
-router.get("/tasks/:id", getTaskById);
+//router.get("/tasks/:id", getTaskById);
+
+router.get("/:taskId", getTaskById);
 
 module.exports = router;

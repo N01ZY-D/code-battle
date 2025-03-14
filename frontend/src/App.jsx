@@ -52,7 +52,7 @@ const App = () => {
         />
         {/* Страница с конкретным заданием */}
         <Route
-          path="/tasks/:id"
+          path="/tasks/:taskId"
           element={
             <PrivateRoute>
               <TaskPage />
