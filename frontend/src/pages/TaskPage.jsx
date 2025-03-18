@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom"; // Используем useParams
-import { Link } from "react-router-dom"; // Импортируем Link для навигации
+import { useParams, Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 
 const TaskPage = () => {
-  const { taskId } = useParams(); // Получаем taskId из параметров URL
+  const { taskId } = useParams();
   const [task, setTask] = useState(null);
   const [userCode, setUserCode] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  console.log("taskId:", taskId);
+  const [failedTests, setFailedTests] = useState([]); // Состояние для хранения информации о неудачных тестах
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -22,15 +22,14 @@ const TaskPage = () => {
             },
           }
         );
-        setTask(response.data); // Сохраняем одно задание в state
-        console.log("Полученное задание:", response.data); // Логируем задание
+        setTask(response.data);
       } catch (error) {
         console.error("Ошибка при загрузке задания:", error);
         setError("Не удалось загрузить задание.");
       }
     };
 
-    if (taskId) fetchTask(); // Загружаем задание, если есть taskId
+    if (taskId) fetchTask();
   }, [taskId]);
 
   const handleCodeChange = (e) => {
@@ -39,18 +38,33 @@ const TaskPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!task || !task.tests || task.tests.length === 0) {
+      setError("Ошибка: нет тестов для проверки.");
+      return;
+    }
+
+    console.log("Sending data:", {
+      code: userCode,
+      tests: task.tests,
+    });
+
     try {
       const response = await axios.post(
         `http://localhost:5000/api/tasks/${taskId}/check`,
         {
           code: userCode,
-          input: task.tests[0].input,
-          expectedOutput: task.tests[0].output,
+          tests: task.tests, // Отправляем все тесты на сервер
         }
       );
-      setResult(
-        response.data.isCorrect ? "Правильный код!" : "Неправильный код."
-      );
+
+      if (response.data.success) {
+        setResult("Правильный код!");
+        setFailedTests([]); // Очищаем список неудачных тестов
+      } else {
+        setResult("Неправильный код.");
+        setFailedTests(response.data.failedTests); // Сохраняем неудачные тесты в состояние
+      }
+
       setError("");
     } catch (error) {
       setError("Ошибка при проверке кода.");
@@ -58,31 +72,75 @@ const TaskPage = () => {
     }
   };
 
-  if (!task) {
-    return <p>Задание не найдено</p>;
-  }
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (!task) return <p>Задание не найдено</p>;
 
   return (
-    <div>
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
       <h1>{task.title}</h1>
+      <p>
+        <strong>Категория:</strong> {task.category} |{" "}
+        <strong>Сложность:</strong> {task.difficulty}
+      </p>
+
       <Link to="/tasks">
-        <button>Назад к списку теорий</button>
+        <button style={{ marginBottom: "10px" }}>Назад к списку теорий</button>
       </Link>
-      <p>{task.description}</p>
-      <h3>Входные данные:</h3>
-      <pre>{task.tests[0].input}</pre>
+
+      <h3>Условие:</h3>
+      <ReactMarkdown>{task.markdownContent}</ReactMarkdown>
+
+      {task.tests.length > 0 && (
+        <>
+          <h3>Примеры входных данных:</h3>
+          {task.tests.map((test, index) => (
+            <pre key={index}>
+              Вход: {test.input} → Ожидаемый выход: {test.output}
+            </pre>
+          ))}
+        </>
+      )}
+
       <h3>Ваш код:</h3>
       <textarea
         value={userCode}
         onChange={handleCodeChange}
         rows="10"
-        cols="50"
+        cols="60"
         placeholder="Введите ваш код..."
+        style={{ width: "100%", fontSize: "16px" }}
       />
-      <br />
-      <button onClick={handleSubmit}>Проверить код</button>
-      {result && <p>{result}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <button
+        onClick={handleSubmit}
+        style={{ marginTop: "10px", padding: "10px 20px", fontSize: "16px" }}
+      >
+        Проверить код
+      </button>
+
+      {result && (
+        <p style={{ marginTop: "10px", fontWeight: "bold" }}>{result}</p>
+      )}
+
+      {/* Отображение неудачных тестов */}
+      {failedTests.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Ошибки тестов:</h3>
+          {failedTests.map((test, index) => (
+            <div key={index} style={{ marginBottom: "10px" }}>
+              <p>
+                <strong>Тест {index + 1}:</strong>
+              </p>
+              <p>Вход: {test.input}</p>
+              <p>Ожидаемый выход: {test.expected}</p>
+              <p>Получено: {test.got}</p>
+              {test.error && (
+                <p style={{ color: "red" }}>Ошибка: {test.error}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

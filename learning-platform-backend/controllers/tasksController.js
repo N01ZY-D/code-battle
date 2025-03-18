@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const { VM } = require("vm2");
 
 // Получение всех заданий
 const getAllTasks = async (req, res) => {
@@ -24,22 +25,101 @@ const getTaskById = async (req, res) => {
   }
 };
 
-const checkTaskCode = async (req, res) => {
-  const { code, input, expectedOutput } = req.body;
-
+const checkSolution = async (req, res) => {
   try {
-    // Логика для проверки кода
-    const result = runUserCode(code, input); // Выполнение кода
+    const { taskId } = req.params;
+    const { code } = req.body; // Код пользователя
 
-    // Проверка на совпадение с ожидаемым результатом
-    if (result === expectedOutput) {
-      return res.json({ isCorrect: true });
+    // Находим задание
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ error: "Задание не найдено" });
+    }
+
+    // Регулярное выражение для поиска имени первой объявленной функции
+    const functionNameMatch = code.match(/function (\w+)\s?\(/);
+    if (!functionNameMatch) {
+      return res
+        .status(400)
+        .json({ error: "Не удалось найти объявление функции." });
+    }
+
+    const functionName = functionNameMatch[1]; // Извлекаем имя функции
+    console.log("Определенное имя функции:", functionName);
+
+    let allTestsPassed = true;
+    const failedTests = [];
+
+    for (const test of task.tests) {
+      const { input, output } = test;
+
+      // Разделяем входные данные и преобразуем их в массив чисел
+      const inputArgs = input.split(" ").map(Number);
+
+      // Логируем входные данные
+      console.log(`Тест: Вход: ${input} → Ожидаемый выход: ${output}`);
+      console.log(`Преобразованные входные данные: ${inputArgs}`);
+
+      // Запускаем код в изолированной среде
+      const vm = new VM({
+        timeout: 1000,
+        sandbox: {},
+      });
+
+      try {
+        // Генерируем код с вызовом функции
+        const userFunction = `
+          (function() {
+            ${code}
+            console.log('Запуск функции с аргументами:', ${JSON.stringify(
+              inputArgs
+            )});
+            return ${functionName}(...${JSON.stringify(inputArgs)});
+          })();
+        `;
+
+        // Логируем сгенерированный код
+        console.log("Сгенерированный код:", userFunction);
+
+        // Выполняем код
+        const result = vm.run(userFunction);
+
+        // Логируем результат выполнения
+        console.log("Результат выполнения:", result);
+
+        // Приводим результат и ожидаемый результат к строкам для точного сравнения
+        if (String(result) !== String(output)) {
+          allTestsPassed = false;
+          failedTests.push({
+            input,
+            expected: output,
+            got: result,
+            error: `Ожидался результат: ${output}, но получено: ${result}`,
+          });
+        }
+      } catch (err) {
+        console.error("Ошибка выполнения кода:", err);
+        failedTests.push({
+          input,
+          error: `Ошибка выполнения: ${err.message}`,
+        });
+        allTestsPassed = false;
+      }
+    }
+
+    if (allTestsPassed) {
+      return res.json({ success: true, message: "Правильный код!" });
     } else {
-      return res.json({ isCorrect: false });
+      return res.json({
+        success: false,
+        message: "Неправильный код.",
+        failedTests,
+      });
     }
   } catch (error) {
-    return res.status(500).json({ message: "Ошибка при проверке кода." });
+    console.error("Ошибка при проверке решения:", error);
+    res.status(500).json({ error: "Ошибка сервера" });
   }
 };
 
-module.exports = { getAllTasks, getTaskById };
+module.exports = { getAllTasks, getTaskById, checkSolution };
