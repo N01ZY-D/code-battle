@@ -9,7 +9,7 @@ const TaskPage = () => {
   const [userCode, setUserCode] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  const [failedTests, setFailedTests] = useState([]); // Состояние для хранения информации о неудачных тестах
+  const [failedTests, setFailedTests] = useState([]);
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -23,6 +23,15 @@ const TaskPage = () => {
           }
         );
         setTask(response.data);
+
+        // Генерируем сигнатуру функции
+        if (response.data.functionName) {
+          const params =
+            response.data.parameters.split(" ").join(", ") || "...args";
+          setUserCode(
+            `function ${response.data.functionName}(${params}) {\n  // Ваш код здесь\n}`
+          );
+        }
       } catch (error) {
         console.error("Ошибка при загрузке задания:", error);
         setError("Не удалось загрузить задание.");
@@ -53,16 +62,16 @@ const TaskPage = () => {
         `http://localhost:5000/api/tasks/${taskId}/check`,
         {
           code: userCode,
-          tests: task.tests, // Отправляем все тесты на сервер
+          tests: task.tests,
         }
       );
 
       if (response.data.success) {
         setResult("Правильный код!");
-        setFailedTests([]); // Очищаем список неудачных тестов
+        setFailedTests([]);
       } else {
         setResult("Неправильный код.");
-        setFailedTests(response.data.failedTests); // Сохраняем неудачные тесты в состояние
+        setFailedTests(response.data.failedTests);
       }
 
       setError("");
@@ -122,7 +131,6 @@ const TaskPage = () => {
         <p style={{ marginTop: "10px", fontWeight: "bold" }}>{result}</p>
       )}
 
-      {/* Отображение неудачных тестов */}
       {failedTests.length > 0 && (
         <div style={{ marginTop: "20px" }}>
           <h3>Ошибки тестов:</h3>
