@@ -81,8 +81,26 @@ const TaskPage = () => {
     }
   };
 
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!task) return <p>Задание не найдено</p>;
+  if (error)
+    return (
+      <>
+        {" "}
+        <p style={{ color: "red" }}>{error}</p>
+        <Link to="/tasks">
+          <button style={{ marginBottom: "10px" }}>Назад к списку задач</button>
+        </Link>
+      </>
+    );
+
+  if (!task)
+    return (
+      <>
+        <p>Задание не найдено</p>
+        <Link to="/tasks">
+          <button style={{ marginBottom: "10px" }}>Назад к списку задач</button>
+        </Link>
+      </>
+    );
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
@@ -93,7 +111,7 @@ const TaskPage = () => {
       </p>
 
       <Link to="/tasks">
-        <button style={{ marginBottom: "10px" }}>Назад к списку теорий</button>
+        <button style={{ marginBottom: "10px" }}>Назад к списку задач</button>
       </Link>
 
       <h3>Условие:</h3>
