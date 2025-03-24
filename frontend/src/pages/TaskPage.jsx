@@ -84,7 +84,6 @@ const TaskPage = () => {
   if (error)
     return (
       <>
-        {" "}
         <p style={{ color: "red" }}>{error}</p>
         <Link to="/tasks">
           <button style={{ marginBottom: "10px" }}>Назад к списку задач</button>

@@ -28,7 +28,7 @@ const getTaskById = async (req, res) => {
 const checkSolution = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { code } = req.body; // Код пользователя
+    const { code } = req.body;
 
     // Находим задание
     const task = await Task.findById(taskId);
@@ -36,15 +36,17 @@ const checkSolution = async (req, res) => {
       return res.status(404).json({ error: "Задание не найдено" });
     }
 
-    // Регулярное выражение для поиска имени первой объявленной функции
-    const functionNameMatch = code.match(/function (\w+)\s?\(/);
+    // Регулярное выражение для поиска имени функции
+    const functionNameMatch = code.match(
+      /(?:function|const|let|var)\s+(\w+)\s*=?\s*\(?/
+    );
     if (!functionNameMatch) {
       return res
         .status(400)
         .json({ error: "Не удалось найти объявление функции." });
     }
 
-    const functionName = functionNameMatch[1]; // Извлекаем имя функции
+    const functionName = functionNameMatch[1];
     console.log("Определенное имя функции:", functionName);
 
     let allTestsPassed = true;
@@ -52,42 +54,31 @@ const checkSolution = async (req, res) => {
 
     for (const test of task.tests) {
       const { input, output } = test;
-
-      // Разделяем входные данные и преобразуем их в массив чисел
       const inputArgs = input.split(" ").map(Number);
-
-      // Логируем входные данные
       console.log(`Тест: Вход: ${input} → Ожидаемый выход: ${output}`);
-      console.log(`Преобразованные входные данные: ${inputArgs}`);
 
-      // Запускаем код в изолированной среде
       const vm = new VM({
         timeout: 1000,
         sandbox: {},
       });
 
       try {
-        // Генерируем код с вызовом функции
+        // Исполняемый код: объявляем переменную с функцией, затем вызываем её
         const userFunction = `
-          (function() {
-            ${code}
-            console.log('Запуск функции с аргументами:', ${JSON.stringify(
-              inputArgs
-            )});
-            return ${functionName}(...${JSON.stringify(inputArgs)});
-          })();
+          ${code}
+          globalThis.${functionName} = ${functionName};
         `;
 
-        // Логируем сгенерированный код
-        console.log("Сгенерированный код:", userFunction);
+        // Выполняем код в изолированной среде
+        vm.run(userFunction);
 
-        // Выполняем код
-        const result = vm.run(userFunction);
+        // Вызываем функцию и получаем результат
+        const result = vm.run(
+          `${functionName}(...${JSON.stringify(inputArgs)})`
+        );
 
-        // Логируем результат выполнения
         console.log("Результат выполнения:", result);
 
-        // Приводим результат и ожидаемый результат к строкам для точного сравнения
         if (String(result) !== String(output)) {
           allTestsPassed = false;
           failedTests.push({
