@@ -1,18 +1,30 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import Navbar from "./components/Navbar";
 import RegisterPage from "./pages/RegisterPage";
 import TheoryListPage from "./pages/TheoryListPage";
 import TheoryPage from "./pages/TheoryPage";
-import TasksPage from "./pages/TasksPage"; // Исправлено название
-import TaskPage from "./pages/TaskPage"; // Страница с конкретным заданием
+import TasksPage from "./pages/TasksPage";
+import TaskPage from "./pages/TaskPage";
 import PrivateRoute from "./components/PrivateRoute";
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+
+  const hideNavbarOn = ["/", "/login", "/register"];
+  const shouldShowNavbar = !hideNavbarOn.includes(location.pathname);
+
   return (
-    <Router>
+    <>
+      {shouldShowNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -41,7 +53,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-        {/* Страница со списком заданий */}
         <Route
           path="/tasks"
           element={
@@ -50,7 +61,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-        {/* Страница с конкретным заданием */}
         <Route
           path="/tasks/:taskId"
           element={
@@ -60,8 +70,14 @@ const App = () => {
           }
         />
       </Routes>
-    </Router>
+    </>
   );
 };
+
+const App = () => (
+  <Router>
+    <AppContent />
+  </Router>
+);
 
 export default App;
