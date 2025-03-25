@@ -12,6 +12,8 @@ const TaskSchema = new mongoose.Schema({
       output: { type: String, required: true },
     },
   ],
+  functionName: { type: String, required: true }, // Имя функции
+  parameters: { type: String, required: true }, // Параметры функции
   createdAt: { type: Date, default: Date.now },
 });
 

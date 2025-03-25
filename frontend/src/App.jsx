@@ -14,6 +14,7 @@ import TheoryListPage from "./pages/TheoryListPage";
 import TheoryPage from "./pages/TheoryPage";
 import TasksPage from "./pages/TasksPage";
 import TaskPage from "./pages/TaskPage";
+import CreateTaskPage from "./pages/CreateTaskPage";
 import PrivateRoute from "./components/PrivateRoute";
 
 const AppContent = () => {
@@ -66,6 +67,14 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <TaskPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-task"
+          element={
+            <PrivateRoute>
+              <CreateTaskPage />
             </PrivateRoute>
           }
         />

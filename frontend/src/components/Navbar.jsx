@@ -36,7 +36,12 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       {user && user.role === "admin" && (
-        <span className="admin-badge">Admin</span>
+        <div className="admin-panel">
+          <span className="admin-badge">Admin</span>
+          <Link to="/create-task" className="create-task-btn">
+            <button>Новая Задача</button>
+          </Link>
+        </div>
       )}
       <button onClick={handleLogout} className="logout-btn">
         Выйти

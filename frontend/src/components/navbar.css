@@ -12,6 +12,13 @@
   z-index: 1000; /* Поверх всего */
 }
 
+.admin-panel {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 20px;
+}
+
 .nav-links {
   display: flex;
   gap: 20px; /* Расстояние между ссылками */

@@ -1,5 +1,6 @@
-const Task = require("../models/Task");
 const { VM } = require("vm2");
+const Task = require("../models/Task");
+const User = require("../models/User");
 
 // Получение всех заданий
 const getAllTasks = async (req, res) => {
@@ -113,4 +114,58 @@ const checkSolution = async (req, res) => {
   }
 };
 
-module.exports = { getAllTasks, getTaskById, checkSolution };
+const createTask = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    console.log("Пользователь из токена:", req.user);
+    if (!user || user.role !== "admin") {
+      console.log("Пользователь не найден или нет прав");
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    console.log("Пользователь найден:", user);
+
+    const {
+      title,
+      description,
+      category,
+      difficulty,
+      markdownContent,
+      tests,
+      functionName,
+      parameters,
+    } = req.body;
+
+    if (
+      !title ||
+      !description ||
+      !category ||
+      !difficulty ||
+      !markdownContent ||
+      !tests ||
+      !functionName ||
+      !parameters
+    ) {
+      return res.status(400).json({ message: "Заполните все поля" });
+    }
+
+    const newTask = new Task({
+      title,
+      description,
+      category,
+      difficulty,
+      markdownContent,
+      tests,
+      functionName,
+      parameters,
+    });
+
+    await newTask.save();
+    res.status(201).json({ message: "Задача успешно создана", task: newTask });
+  } catch (error) {
+    console.error("Ошибка при создании задачи:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+module.exports = { getAllTasks, getTaskById, checkSolution, createTask };
