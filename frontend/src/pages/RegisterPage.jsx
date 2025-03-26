@@ -6,6 +6,7 @@ import { Link } from "react-router-dom"; // Импортируем Link для �
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState(""); // Состояние для никнейма
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const RegisterPage = () => {
         {
           email,
           password,
+          nickname, // Добавляем никнейм
         }
       );
       localStorage.setItem("token", response.data.token); // Сохраняем токен
@@ -49,12 +51,20 @@ const RegisterPage = () => {
             required
           />
         </div>
+        <div>
+          <label>Никнейм</label>
+          <input
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            required
+          />
+        </div>
         {error && <p>{error}</p>}
         <button type="submit">Зарегистрироваться</button>
       </form>
       <p>
         Уже есть аккаунт? <Link to="/login">Войти</Link>{" "}
-        {/* Ссылка на страницу авторизации */}
       </p>
       <p>
         Вернуться на <Link to="/">главную</Link>

@@ -43,6 +43,19 @@ const Navbar = () => {
           </Link>
         </div>
       )}
+      {user && (
+        <div className="user-links">
+          <Link to="/dashboard" className="dashboard-btn">
+            <button>На главную</button>
+          </Link>
+          <Link to="/profile" className="profile-btn">
+            <button>Профиль</button>
+          </Link>
+          <Link to="/leaderboard" className="leaderboard-btn">
+            <button>Таблица Лидеров</button>
+          </Link>
+        </div>
+      )}
       <button onClick={handleLogout} className="logout-btn">
         Выйти
       </button>

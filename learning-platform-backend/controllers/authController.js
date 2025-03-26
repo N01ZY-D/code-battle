@@ -4,7 +4,7 @@ const User = require("../models/User");
 
 // Регистрация пользователя
 const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, nickname } = req.body; // Добавляем nickname в body
 
   try {
     // Проверка, существует ли уже пользователь
@@ -21,6 +21,7 @@ const registerUser = async (req, res) => {
     const newUser = new User({
       email,
       password: hashedPassword,
+      nickname, // Добавляем никнейм
     });
 
     // Сохранение пользователя в базе данных

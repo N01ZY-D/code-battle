@@ -15,6 +15,8 @@ import TheoryPage from "./pages/TheoryPage";
 import TasksPage from "./pages/TasksPage";
 import TaskPage from "./pages/TaskPage";
 import CreateTaskPage from "./pages/CreateTaskPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import ProfilePage from "./pages/ProfilePage";
 import PrivateRoute from "./components/PrivateRoute";
 
 const AppContent = () => {
@@ -75,6 +77,22 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <CreateTaskPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage /> {/* Страница профиля */}
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <PrivateRoute>
+              <LeaderboardPage /> {/* Страница таблицы лидеров */}
             </PrivateRoute>
           }
         />
