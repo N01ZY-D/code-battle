@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
     const leaderboard = await User.find()
       .sort({ solvedTasksCount: -1 }) // Сортировка по количеству решённых задач
       .limit(10) // Топ-10 пользователей
-      .select("nickname avatar solvedTasksCount");
+      .select("nickname avatarMatrix avatarColor solvedTasksCount");
 
     res.json(leaderboard);
   } catch (error) {

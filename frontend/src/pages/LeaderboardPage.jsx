@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Avatar from "../components/Avatar";
 import axios from "axios";
 
 const LeaderboardPage = () => {
@@ -37,7 +38,11 @@ const LeaderboardPage = () => {
               <td>{index + 1}</td>
               <td>{user.nickname}</td>
               <td>
-                <img src={user.avatar} alt="Avatar" width={50} height={50} />
+                <Avatar
+                  matrix={user.avatarMatrix}
+                  color={user.avatarColor}
+                  size={48}
+                />
               </td>
               <td>{user.solvedTasksCount}</td>
             </tr>

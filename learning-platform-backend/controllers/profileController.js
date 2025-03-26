@@ -3,7 +3,7 @@ const User = require("../models/User");
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user).select(
-      "nickname avatar solvedTasksCount"
+      "nickname avatarMatrix avatarColor solvedTasksCount"
     );
     if (!user)
       return res.status(404).json({ message: "Пользователь не найден" });

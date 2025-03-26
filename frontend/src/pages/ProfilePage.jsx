@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Avatar from "../components/Avatar";
 import axios from "axios";
 
 const ProfilePage = () => {
@@ -47,11 +48,15 @@ const ProfilePage = () => {
 
   if (loading) return <div>Загрузка...</div>;
 
+  console.log("ProfilePage received user:", user);
+  console.log("Avatar matrix:", user?.avatarMatrix);
+  console.log("Avatar color:", user?.avatarColor);
+
   return (
     <div>
       <h2>Мой профиль</h2>
       <div>
-        <img src={user.avatar} alt="Avatar" width={100} height={100} />
+        <Avatar matrix={user.avatarMatrix} color={user.avatarColor} size={96} />
         <p>Никнейм: {user.nickname}</p>
         <p>Решено задач: {user.solvedTasksCount}</p>
       </div>

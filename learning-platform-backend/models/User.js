@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
       return `User${Math.floor(1000 + Math.random() * 9000)}`;
     },
   },
-  avatar: { type: String, default: "/avatars/default.png" }, // Здесь можешь поменять путь
+  avatarMatrix: { type: [[Number]], required: true }, // 12x12 массив 0 и 1
+  avatarColor: { type: String, required: true }, // Цвет для единиц
   solvedTasksCount: { type: Number, default: 0 },
 });
 
