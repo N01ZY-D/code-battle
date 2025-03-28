@@ -1,23 +1,37 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import Navbar from "./components/Navbar";
 import RegisterPage from "./pages/RegisterPage";
-import TheoryListPage from "./pages/TheoryListPage"; // Новый компонент для списка теорий
-import TheoryPage from "./pages/TheoryPage"; // Страница с конкретной теорией
-import TasksPage from "./pages/TasksPage"; // Новый компонент для страницы с заданиями
-import PrivateRoute from "./components/PrivateRoute"; // Компонент для защиты маршрутов
+import TheoryListPage from "./pages/TheoryListPage";
+import TheoryPage from "./pages/TheoryPage";
+import TasksPage from "./pages/TasksPage";
+import TaskPage from "./pages/TaskPage";
+import CreateTaskPage from "./pages/CreateTaskPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import ProfilePage from "./pages/ProfilePage";
+import PrivateRoute from "./components/PrivateRoute";
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+
+  const hideNavbarOn = ["/", "/login", "/register"];
+  const shouldShowNavbar = !hideNavbarOn.includes(location.pathname);
+
   return (
-    <Router>
+    <>
+      {shouldShowNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
-        {/* Страница для выбора между теорией и заданиями (доступна только после авторизации) */}
         <Route
           path="/dashboard"
           element={
@@ -26,8 +40,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-
-        {/* Страница выбора теории */}
         <Route
           path="/theory"
           element={
@@ -36,8 +48,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-
-        {/* Страница с конкретной теорией */}
         <Route
           path="/theory/:slug"
           element={
@@ -46,8 +56,6 @@ const App = () => {
             </PrivateRoute>
           }
         />
-
-        {/* Страница с заданиями */}
         <Route
           path="/tasks"
           element={
@@ -56,9 +64,47 @@ const App = () => {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/tasks/:taskId"
+          element={
+            <PrivateRoute>
+              <TaskPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-task"
+          element={
+            <PrivateRoute>
+              <CreateTaskPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage /> {/* Страница профиля */}
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <PrivateRoute>
+              <LeaderboardPage /> {/* Страница таблицы лидеров */}
+            </PrivateRoute>
+          }
+        />
       </Routes>
-    </Router>
+    </>
   );
 };
+
+const App = () => (
+  <Router>
+    <AppContent />
+  </Router>
+);
 
 export default App;
