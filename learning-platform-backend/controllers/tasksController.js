@@ -30,12 +30,21 @@ const checkSolution = async (req, res) => {
   try {
     const { taskId } = req.params;
     const { code } = req.body;
+    const userId = req.user;
 
     // Находим задание
     const task = await Task.findById(taskId);
     if (!task) {
       return res.status(404).json({ error: "Задание не найдено" });
     }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    // Проверяем, решал ли пользователь уже эту задачу
+    const hasSolvedTaskBefore = user.solvedTasks.includes(taskId);
 
     // Регулярное выражение для поиска имени функции
     const functionNameMatch = code.match(
@@ -100,6 +109,14 @@ const checkSolution = async (req, res) => {
     }
 
     if (allTestsPassed) {
+      if (hasSolvedTaskBefore) {
+        return res.json({ success: true, message: "Правильный код!" });
+      }
+
+      user.solvedTasks.push(taskId);
+      user.solvedTasksCount += 1; // Увеличиваем счётчик решённых задач
+      await user.save();
+
       return res.json({ success: true, message: "Правильный код!" });
     } else {
       return res.json({

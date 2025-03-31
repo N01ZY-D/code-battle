@@ -15,7 +15,7 @@ router.get("/", getAllTasks);
 
 router.get("/:taskId", getTaskById);
 
-router.post("/:taskId/check", checkSolution);
+router.post("/:taskId/check", authMiddleware, checkSolution);
 
 router.post("/create", authMiddleware, createTask);
 

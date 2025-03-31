@@ -63,6 +63,11 @@ const TaskPage = () => {
         {
           code: userCode,
           tests: task.tests,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 

@@ -11,7 +11,10 @@ const LeaderboardPage = () => {
         const response = await axios.get(
           "http://localhost:5000/api/leaderboard"
         );
-        setLeaderboard(response.data);
+        const sortedLeaderboard = response.data.sort(
+          (a, b) => b.solvedTasksCount - a.solvedTasksCount
+        );
+        setLeaderboard(sortedLeaderboard);
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
       }
