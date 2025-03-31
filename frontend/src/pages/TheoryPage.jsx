@@ -33,7 +33,7 @@ const TheoryPage = () => {
   return (
     <div>
       {theory ? (
-        <div>
+        <div className="main-content">
           <h1>{theory.title}</h1>
           <h3>{theory.category}</h3>
           <ReactMarkdown

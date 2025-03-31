@@ -16,12 +16,18 @@
   display: flex;
   align-items: center;
   flex-direction: row;
-  gap: 20px;
+  gap: 10px;
+  margin-right: 20px;
 }
 
 .nav-links {
   display: flex;
-  gap: 20px; /* Расстояние между ссылками */
+  gap: 10px; /* Расстояние между ссылками */
+}
+
+.user-links {
+  display: flex;
+  gap: 5px; /* Расстояние между ссылками */
 }
 
 .logout-btn {
@@ -38,4 +44,9 @@
 
 .logout-btn:hover {
   background-color: #ff1a1a;
+}
+
+.main-content {
+  margin-top: 100px;
+  margin-bottom: 60px;
 }

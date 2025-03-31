@@ -107,7 +107,10 @@ const TaskPage = () => {
     );
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
+    <div
+      className="main-content"
+      style={{ maxWidth: "800px", padding: "20px" }}
+    >
       <h1>{task.title}</h1>
       <p>
         <strong>Категория:</strong> {task.category} |{" "}
