@@ -108,7 +108,7 @@ const TaskPage = () => {
 
   return (
     <div
-      className="main-content"
+      className="main-task-content"
       style={{ maxWidth: "800px", padding: "20px" }}
     >
       <h1>{task.title}</h1>
