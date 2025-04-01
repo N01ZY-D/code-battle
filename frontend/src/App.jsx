@@ -19,6 +19,8 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivateRoute from "./components/PrivateRoute";
 
+import "./main.css";
+
 const AppContent = () => {
   const location = useLocation();
 

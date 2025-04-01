@@ -71,14 +71,6 @@ const ProfilePage = () => {
             onChange={(e) => setNewNickname(e.target.value)}
           />
         </div>
-        <div>
-          <label>Новый аватар (ссылка):</label>
-          <input
-            type="text"
-            value={newAvatar}
-            onChange={(e) => setNewAvatar(e.target.value)}
-          />
-        </div>
         <button onClick={handleUpdateProfile}>Сохранить изменения</button>
       </div>
     </div>
