@@ -9,11 +9,14 @@ const TheoryListPage = () => {
   useEffect(() => {
     const fetchTheories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/theory", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Используем токен
-          },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Используем токен
+            },
+          }
+        );
         setTheories(response.data);
       } catch (error) {
         console.error("Ошибка при загрузке теорий:", error);

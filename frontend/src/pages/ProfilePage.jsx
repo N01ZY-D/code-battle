@@ -11,11 +11,14 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/profile", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         setUser(response.data);
         setLoading(false);
       } catch (error) {
@@ -29,7 +32,7 @@ const ProfilePage = () => {
   const handleUpdateProfile = async () => {
     try {
       const response = await axios.put(
-        "http://localhost:5000/api/profile",
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
         {
           nickname: newNickname || user.nickname,
           avatar: newAvatar || user.avatar,

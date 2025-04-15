@@ -15,7 +15,9 @@ const TaskPage = () => {
     const fetchTask = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/tasks/${taskId}`,
+          `${
+            import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+          }/api/tasks/${taskId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -59,7 +61,9 @@ const TaskPage = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/tasks/${taskId}/check`,
+        `${
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+        }/api/tasks/${taskId}/check`,
         {
           code: userCode,
           tests: task.tests,

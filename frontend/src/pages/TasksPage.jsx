@@ -10,7 +10,9 @@ const TasksPage = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/tasks");
+        const response = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks`
+        );
         console.log("Полученные данные:", response.data); // Логируем данные
         setTasks(response.data);
       } catch (error) {
