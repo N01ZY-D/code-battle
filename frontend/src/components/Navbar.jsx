@@ -40,6 +40,9 @@ const Navbar = () => {
           <Link to="/create-task" className="create-task-btn">
             <button>Новая Задача</button>
           </Link>
+          <Link to="/create-theory" className="create-theory-btn">
+            <button>Новая Теория</button>
+          </Link>
         </div>
       )}
       {user && (

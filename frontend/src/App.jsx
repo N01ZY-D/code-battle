@@ -15,6 +15,7 @@ import TheoryPage from "./pages/TheoryPage";
 import TasksPage from "./pages/TasksPage";
 import TaskPage from "./pages/TaskPage";
 import CreateTaskPage from "./pages/CreateTaskPage";
+import CreateTheoryPage from "./pages/CreateTheoryPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivateRoute from "./components/PrivateRoute";
@@ -79,6 +80,14 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <CreateTaskPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-theory"
+          element={
+            <PrivateRoute>
+              <CreateTheoryPage /> {/* Страница создания теории */}
             </PrivateRoute>
           }
         />

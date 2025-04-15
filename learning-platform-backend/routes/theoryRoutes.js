@@ -2,6 +2,7 @@
 const express = require("express");
 const Theory = require("../models/Theory");
 const authMiddleware = require("../middleware/authMiddleware");
+const { createTheory } = require("../controllers/theoryController");
 
 const router = express.Router();
 
@@ -28,5 +29,7 @@ router.get("/:slug", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+
+router.post("/create", authMiddleware, createTheory);
 
 module.exports = router;
