@@ -14,7 +14,9 @@ const TheoryPage = () => {
       try {
         // Запрос на получение теории по slug
         const response = await axios.get(
-          `http://localhost:5000/api/theory/${slug}`,
+          `${
+            import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+          }/api/theory/${slug}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

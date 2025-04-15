@@ -21,9 +21,12 @@ const CreateTaskPage = () => {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:5000/api/auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -62,14 +65,17 @@ const CreateTaskPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:5000/api/tasks/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(taskData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(taskData),
+        }
+      );
 
       if (response.ok) {
         alert("Задача успешно создана!");

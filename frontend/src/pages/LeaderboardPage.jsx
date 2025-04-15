@@ -9,7 +9,7 @@ const LeaderboardPage = () => {
     const fetchLeaderboard = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/leaderboard"
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/leaderboard`
         );
         const sortedLeaderboard = response.data.sort(
           (a, b) => b.solvedTasksCount - a.solvedTasksCount
