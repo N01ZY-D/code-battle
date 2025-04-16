@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const generateAvatarData = require("../utils/avatarGenerator");
 
+const TOKEN_EXPIRES_IN = "7d";
+
 // Регистрация пользователя
 const registerUser = async (req, res) => {
   const { email, password, nickname } = req.body; // Добавляем nickname в body
@@ -34,7 +36,7 @@ const registerUser = async (req, res) => {
 
     // Генерация JWT токена
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: TOKEN_EXPIRES_IN,
     });
 
     res.status(201).json({ token });
@@ -63,7 +65,7 @@ const loginUser = async (req, res) => {
 
     // Генерация JWT токена
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: TOKEN_EXPIRES_IN,
     });
 
     res.json({ token });
