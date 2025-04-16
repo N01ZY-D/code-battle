@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
+import AuthContext from "../context/AuthContext"; // Импортируем контекст
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { login } = useContext(AuthContext); // Получаем login из контекста
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,7 +22,7 @@ const LoginPage = () => {
           password,
         }
       );
-      localStorage.setItem("token", response.data.token); // Сохраняем токен
+      login(response.data.token); // Сохраняем токен в контексте
       navigate("/dashboard"); // Переходим на главную страницу после успешного логина
     } catch (error) {
       setError("Неверные данные для входа");

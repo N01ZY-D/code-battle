@@ -112,10 +112,6 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
-);
+const App = () => <AppContent />;
 
 export default App;
