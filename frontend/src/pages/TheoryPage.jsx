@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
+import "../styles/TheoryPage.css"; // Импортируем стили для страницы теории
 
 const TheoryPage = () => {
   const { slug } = useParams(); // Получаем slug из URL

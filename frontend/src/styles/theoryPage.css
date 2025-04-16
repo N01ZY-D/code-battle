@@ -1,0 +1,36 @@
+/* Стили для блоков кода (между ``` ``` ) */
+pre {
+  background-color: #181818;
+  padding: 10px;
+  border-radius: 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+pre code {
+  font-family: "Courier New", Consolas, monospace;
+  font-size: 1rem;
+  color: #bebebe;
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Стили для inline кода (внутри текста) остаются стандартными */
+code {
+  font-family: "Courier New", Consolas, monospace;
+  background-color: transparent;
+  padding: 0.2rem 0.4rem;
+  border-radius: 10px;
+}
+
+.main-content img {
+  max-width: 100%; /* Ограничивает ширину изображения */
+  height: auto; /* Сохраняет пропорции */
+  border-radius: 10px; /* Скругление углов */
+  background-color: #f0f0f0; /* Фон для изображения */
+  padding: 10px; /* Отступы вокруг изображения */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень для выделения */
+  display: block; /* Блочный элемент для центрирования */
+  margin: 20px auto; /* Центрирует изображение и добавляет отступы */
+}
