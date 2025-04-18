@@ -62,7 +62,7 @@ const ProfilePage = () => {
         <Avatar
           matrix={user.avatarMatrix}
           color={user.avatarColor}
-          size={320}
+          size={324}
         />
         <div className="profile-nickname-block">
           <p className="profile-label">Никнейм:</p>

@@ -37,7 +37,7 @@ const Avatar = ({ matrix, color, size = 48 }) => {
         if (matrix[y][x] === 1) {
           ctx.fillStyle = color; // Цвет единиц
         } else {
-          ctx.fillStyle = "#F0F0F0"; //Цвет для нулей
+          ctx.fillStyle = "#6a6a6a"; //Цвет для нулей
         }
         ctx.fillRect(x * scale, y * scale, scale, scale);
       }
