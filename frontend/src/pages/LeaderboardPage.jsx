@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Avatar from "../components/Avatar";
 import axios from "axios";
+import "../styles/leaderboardPage.css"; // Импортируем стили для страницы таблицы лидеров
 
 const LeaderboardPage = () => {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -24,9 +25,9 @@ const LeaderboardPage = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Таблица лидеров</h2>
-      <table>
+    <div className="leaderboard-container">
+      <h2 className="leaderboard-title">Таблица лидеров</h2>
+      <table className="leaderboard-table">
         <thead>
           <tr>
             <th>Место</th>
@@ -41,11 +42,13 @@ const LeaderboardPage = () => {
               <td>{index + 1}</td>
               <td>{user.nickname}</td>
               <td>
-                <Avatar
-                  matrix={user.avatarMatrix}
-                  color={user.avatarColor}
-                  size={48}
-                />
+                <div className="leaderboard-avatar">
+                  <Avatar
+                    matrix={user.avatarMatrix}
+                    color={user.avatarColor}
+                    size={48}
+                  />
+                </div>
               </td>
               <td>{user.solvedTasksCount}</td>
             </tr>
