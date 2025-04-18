@@ -66,6 +66,12 @@ const CreateTaskPage = () => {
     });
   };
 
+  const removeTest = (index) => {
+    if (taskData.tests.length <= 1) return; // Если остался только один тест — ничего не делаем
+    const updatedTests = taskData.tests.filter((_, i) => i !== index);
+    setTaskData({ ...taskData, tests: updatedTests });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -207,6 +213,14 @@ const CreateTaskPage = () => {
               onChange={(e) => handleTestChange(index, e)}
               required
             />
+            <button
+              type="button"
+              className="remove-test-button"
+              onClick={() => removeTest(index)}
+              disabled={taskData.tests.length <= 1}
+            >
+              ✖
+            </button>
           </div>
         ))}
 
