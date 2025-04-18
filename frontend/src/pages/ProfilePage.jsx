@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Avatar from "../components/Avatar";
 import axios from "axios";
+import "../styles/profilePage.css"; // Импортируем стили для страницы профиля
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -56,25 +57,40 @@ const ProfilePage = () => {
   console.log("Avatar color:", user?.avatarColor);
 
   return (
-    <div>
-      <h2>Мой профиль</h2>
-      <div>
-        <Avatar matrix={user.avatarMatrix} color={user.avatarColor} size={96} />
-        <p>Никнейм: {user.nickname}</p>
-        <p>Решено задач: {user.solvedTasksCount}</p>
+    <div className="profile-container">
+      <div className="profile-left">
+        <Avatar
+          matrix={user.avatarMatrix}
+          color={user.avatarColor}
+          size={320}
+        />
+        <div className="profile-nickname-block">
+          <p className="profile-label">Никнейм:</p>
+          <p className="profile-nickname">{user.nickname}</p>
+
+          <div className="profile-update-form">
+            <h3 className="profile-update-title">Обновить профиль</h3>
+            <div className="profile-input-group">
+              <label className="profile-input-label">Новый никнейм:</label>
+              <input
+                type="text"
+                className="profile-input"
+                value={newNickname}
+                onChange={(e) => setNewNickname(e.target.value)}
+              />
+            </div>
+            <button
+              className="profile-save-button"
+              onClick={handleUpdateProfile}
+            >
+              Сохранить изменения
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <h3>Обновить профиль</h3>
-        <div>
-          <label>Новый никнейм:</label>
-          <input
-            type="text"
-            value={newNickname}
-            onChange={(e) => setNewNickname(e.target.value)}
-          />
-        </div>
-        <button onClick={handleUpdateProfile}>Сохранить изменения</button>
+      <div className="profile-right">
+        <p>Решено задач: {user.solvedTasksCount}</p>
       </div>
     </div>
   );
