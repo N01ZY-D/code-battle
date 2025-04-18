@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/createTaskPage.css"; // Импортируем стили для страницы создания задачи
 
 const CreateTaskPage = () => {
   const navigate = useNavigate();
@@ -40,6 +41,11 @@ const CreateTaskPage = () => {
 
     fetchUser();
   }, [navigate]);
+
+  const handleTextareaInput = (e) => {
+    e.target.style.height = "auto"; // Сначала сбрасываем высоту
+    e.target.style.height = `${e.target.scrollHeight}px`; // Потом подстраиваем под содержимое
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,67 +100,97 @@ const CreateTaskPage = () => {
   }
 
   return (
-    <div>
-      <h2>Создание новой задачи</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Название"
-          value={taskData.title}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Описание"
-          value={taskData.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Категория"
-          value={taskData.category}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="difficulty"
-          placeholder="Сложность"
-          value={taskData.difficulty}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="markdownContent"
-          placeholder="Markdown описание"
-          value={taskData.markdownContent}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="functionName"
-          placeholder="Имя функции"
-          value={taskData.functionName}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="parameters"
-          placeholder="Параметры функции"
-          value={taskData.parameters}
-          onChange={handleChange}
-          required
-        />
+    <div className="create-task-page">
+      <h2 className="page-title">Создание новой задачи</h2>
+      <form className="task-form" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="title">Название</label>
+          <input
+            id="title"
+            type="text"
+            name="title"
+            placeholder="Название"
+            value={taskData.title}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="">Описание</label>
+          <textarea
+            id="description"
+            name="description"
+            placeholder="Описание"
+            value={taskData.description}
+            onChange={handleChange}
+            onInput={handleTextareaInput}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="category">Категория</label>
+          <input
+            id="category"
+            type="text"
+            name="category"
+            placeholder="Категория"
+            value={taskData.category}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="difficulty">Сложность</label>
+          <input
+            id="difficulty"
+            type="text"
+            name="difficulty"
+            placeholder="Сложность"
+            value={taskData.difficulty}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="markdownContent">Markdown описание</label>
+          <textarea
+            id="markdownContent"
+            name="markdownContent"
+            placeholder="Markdown описание"
+            value={taskData.markdownContent}
+            onChange={handleChange}
+            onInput={handleTextareaInput}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="functionName">Имя функции</label>
+          <input
+            id="functionName"
+            type="text"
+            name="functionName"
+            placeholder="Имя функции"
+            value={taskData.functionName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="parameters">Параметры функции</label>
+          <input
+            id="parameters"
+            type="text"
+            name="parameters"
+            placeholder="Параметры функции"
+            value={taskData.parameters}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-        <h3>Тесты</h3>
+        <h3 className="sub-title">Тесты</h3>
         {taskData.tests.map((test, index) => (
-          <div key={index}>
+          <div className="test-group" key={index}>
             <input
               type="text"
               name="input"
@@ -174,15 +210,19 @@ const CreateTaskPage = () => {
           </div>
         ))}
 
-        <button
-          type="button"
-          onClick={addTest}
-          disabled={taskData.tests.length >= 10} // Ограничиваем количество тестов
-        >
-          Добавить тест
-        </button>
-
-        <button type="submit">Создать задачу</button>
+        <div className="buttons">
+          <button
+            type="button"
+            className="add-test-button"
+            onClick={addTest}
+            disabled={taskData.tests.length >= 10}
+          >
+            Добавить тест
+          </button>
+          <button type="submit" className="submit-button">
+            Создать задачу
+          </button>
+        </div>
       </form>
     </div>
   );
