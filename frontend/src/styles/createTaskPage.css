@@ -44,7 +44,7 @@ textarea {
 .form-group input:focus,
 .form-group textarea:focus,
 .test-group input:focus {
-  border-color: #007bff;
+  border-color: #646cff;
   outline: none;
 }
 
