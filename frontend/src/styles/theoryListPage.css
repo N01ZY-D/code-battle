@@ -1,0 +1,78 @@
+.theory-list-page__title,
+.tasks-page__title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.theory-list-page__content,
+.tasks-page__content {
+  display: flex;
+  flex-direction: column;
+  background-color: #2c2f36;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.theory-list-page__links,
+.tasks-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.theory-list-page__item,
+.tasks-page__item {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  background-color: #344756;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.theory-list-page__item:hover,
+.tasks-page__item:hover {
+  background-color: #3a3f48;
+  transition: background-color 0.3s;
+}
+
+.theory-list-page__button,
+.tasks-page__button {
+  padding: 10px;
+  font-size: 16px;
+  flex: 1;
+  height: 50px; /* ДОБАВИЛИ фиксированную высоту */
+  display: flex; /* Чтобы текст в кнопке был по центру */
+  align-items: center;
+  justify-content: center;
+}
+
+.theory-list-page__buttons,
+.tasks-page__buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.theory-list-page__move-button,
+.tasks-page__move-button {
+  padding: 5px 10px;
+  height: 50px; /* Делаем ту же высоту, что и у page_button */
+  font-size: 14px; /* Можно чуть меньше шрифт, если хочется */
+}
+
+.theory-list-page__back-button,
+.tasks-page__back-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.theory-list-page__back-button:hover,
+.tasks-page__back-button:hover {
+  background-color: #0056b3;
+}
