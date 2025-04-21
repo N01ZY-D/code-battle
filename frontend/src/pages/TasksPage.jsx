@@ -103,27 +103,38 @@ const TasksPage = () => {
   return (
     <div>
       <h1>Список Заданий</h1>
-      <ul>
+      <div>
         {tasks.length === 0 ? (
           <p>Нет доступных заданий</p>
         ) : (
           tasks.map((task, index) => (
-            <li key={task._id}>
-              <Link to={`/tasks/${task._id}`}>{task.title}</Link>
+            <div key={task._id} style={{ marginBottom: "10px" }}>
+              <button
+                onClick={() => navigate(`/tasks/${task._id}`)} // Перенаправление на страницу задания
+                style={{ fontSize: "16px" }}
+              >
+                {task.title}
+              </button>
               {user && user.role === "admin" && (
-                <div>
-                  <button onClick={() => handleMoveTask(task._id, "up")}>
-                    Move Up
+                <div style={{ marginTop: "5px" }}>
+                  <button
+                    onClick={() => handleMoveTask(task._id, "up")}
+                    disabled={index === 0} // Отключаем кнопку "вверх", если задание первое
+                  >
+                    Вверх
                   </button>
-                  <button onClick={() => handleMoveTask(task._id, "down")}>
-                    Move Down
+                  <button
+                    onClick={() => handleMoveTask(task._id, "down")}
+                    disabled={index === tasks.length - 1} // Отключаем кнопку "вниз", если задание последнее
+                  >
+                    Вниз
                   </button>
                 </div>
               )}
-            </li>
+            </div>
           ))
         )}
-      </ul>
+      </div>
       <button onClick={handleBackToDashboard}>Вернуться в Dashboard</button>
     </div>
   );
