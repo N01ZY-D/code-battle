@@ -1,28 +1,74 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../styles/theoryListPage.css"; // Импортируем стили для страницы теорий
 
 const TheoryListPage = () => {
   const [theories, setTheories] = useState([]);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTheories = async () => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("Токен отсутствует");
+        return;
+      }
+
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory`,
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        setTheories(response.data);
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          console.error(
+            "Ошибка при загрузке данных пользователя:",
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Ошибка при загрузке данных пользователя:", error);
+      }
+    };
+
+    const fetchTheories = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("Токен отсутствует");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setTheories(data);
+        } else {
+          console.error("Ошибка при загрузке теорий:", response.statusText);
+        }
       } catch (error) {
         console.error("Ошибка при загрузке теорий:", error);
       }
     };
 
+    fetchUser();
     fetchTheories();
   }, []);
 
@@ -77,31 +123,45 @@ const TheoryListPage = () => {
   };
 
   return (
-    <div>
-      <h1>Выберите раздел теории</h1>
-      <div>
-        {theories.map((theory, index) => (
-          <div key={theory._id} style={{ marginBottom: "10px" }}>
-            <button onClick={() => handleTheoryClick(theory.slug)}>
-              {theory.title}
-            </button>
-            <div style={{ marginTop: "5px" }}>
+    <div className="theory-list-page">
+      <h1 className="theory-list-page__title">Выберите раздел теории</h1>
+      <div className="theory-list-page__content">
+        <div className="theory-list-page__links">
+          {theories.map((theory, index) => (
+            <div key={theory._id} className="theory-list-page__item">
               <button
-                onClick={() => handleMoveTheory(theory._id, "up")}
-                disabled={index === 0} // Отключаем кнопку "вверх", если теория первая
+                className="theory-list-page__button"
+                onClick={() => handleTheoryClick(theory.slug)}
               >
-                Вверх
+                {theory.title}
               </button>
-              <button
-                onClick={() => handleMoveTheory(theory._id, "down")}
-                disabled={index === theories.length - 1} // Отключаем кнопку "вниз", если теория последняя
-              >
-                Вниз
-              </button>
+              {user && user.role === "admin" && (
+                <div className="theory-list-page__buttons">
+                  <button
+                    className="theory-list-page__move-button"
+                    onClick={() => handleMoveTheory(theory._id, "up")}
+                    disabled={index === 0} // Отключаем кнопку "вверх", если теория первая
+                  >
+                    Вверх
+                  </button>
+                  <button
+                    className="theory-list-page__move-button"
+                    onClick={() => handleMoveTheory(theory._id, "down")}
+                    disabled={index === theories.length - 1} // Отключаем кнопку "вниз", если теория последняя
+                  >
+                    Вниз
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-        <button onClick={handleBackToDashboard}>Вернуться в Dashboard</button>
+          ))}
+        </div>
+        <button
+          className="theory-list-page__back-button"
+          onClick={handleBackToDashboard}
+        >
+          Вернуться в Dashboard
+        </button>
       </div>
     </div>
   );

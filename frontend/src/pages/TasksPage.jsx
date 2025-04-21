@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import "../styles/tasksPage.css"; // Импортируем стили для страницы заданий
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -101,41 +101,50 @@ const TasksPage = () => {
   };
 
   return (
-    <div>
-      <h1>Список Заданий</h1>
-      <div>
+    <div className="tasks-page">
+      <h1 className="tasks-page__title">Список Заданий</h1>
+      <div className="tasks-page__content">
         {tasks.length === 0 ? (
-          <p>Нет доступных заданий</p>
+          <p className="tasks-page__no-tasks">Нет доступных заданий</p>
         ) : (
-          tasks.map((task, index) => (
-            <div key={task._id} style={{ marginBottom: "10px" }}>
-              <button
-                onClick={() => navigate(`/tasks/${task._id}`)} // Перенаправление на страницу задания
-                style={{ fontSize: "16px" }}
-              >
-                {task.title}
-              </button>
-              {user && user.role === "admin" && (
-                <div style={{ marginTop: "5px" }}>
-                  <button
-                    onClick={() => handleMoveTask(task._id, "up")}
-                    disabled={index === 0} // Отключаем кнопку "вверх", если задание первое
-                  >
-                    Вверх
-                  </button>
-                  <button
-                    onClick={() => handleMoveTask(task._id, "down")}
-                    disabled={index === tasks.length - 1} // Отключаем кнопку "вниз", если задание последнее
-                  >
-                    Вниз
-                  </button>
-                </div>
-              )}
-            </div>
-          ))
+          <div className="tasks-page__list">
+            {tasks.map((task, index) => (
+              <div key={task._id} className="tasks-page__item">
+                <button
+                  className="tasks-page__button"
+                  onClick={() => navigate(`/tasks/${task._id}`)} // Перенаправление на страницу задания
+                >
+                  {task.title}
+                </button>
+                {user && user.role === "admin" && (
+                  <div className="tasks-page__buttons">
+                    <button
+                      className="tasks-page__move-button"
+                      onClick={() => handleMoveTask(task._id, "up")}
+                      disabled={index === 0} // Отключаем кнопку "вверх", если задание первое
+                    >
+                      Вверх
+                    </button>
+                    <button
+                      className="tasks-page__move-button"
+                      onClick={() => handleMoveTask(task._id, "down")}
+                      disabled={index === tasks.length - 1} // Отключаем кнопку "вниз", если задание последнее
+                    >
+                      Вниз
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
-      <button onClick={handleBackToDashboard}>Вернуться в Dashboard</button>
+      <button
+        className="tasks-page__back-button"
+        onClick={handleBackToDashboard}
+      >
+        Вернуться в Dashboard
+      </button>
     </div>
   );
 };
