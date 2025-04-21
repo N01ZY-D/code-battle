@@ -12,8 +12,16 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+const allowedOrigin = process.env.CLIENT_URL || "*";
+
 app.use(express.json()); // Позволяет серверу читать JSON в `req.body`
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true, // Чтобы разрешить отправку cookies и других данных
+  })
+);
 
 // Подключаем маршруты
 app.use("/api/auth", authRoutes);

@@ -6,6 +6,7 @@ const TheorySchema = new mongoose.Schema({
   category: { type: String, required: true }, // Например, "Основы"
   markdownContent: { type: String, required: true }, // Текст в формате Markdown
   createdAt: { type: Date, default: Date.now }, // Дата создания
+  order: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("Theory", TheorySchema);

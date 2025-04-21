@@ -15,6 +15,7 @@ const TaskSchema = new mongoose.Schema({
   functionName: { type: String, required: true }, // Имя функции
   parameters: { type: String, required: true }, // Параметры функции
   createdAt: { type: Date, default: Date.now },
+  order: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("Task", TaskSchema);

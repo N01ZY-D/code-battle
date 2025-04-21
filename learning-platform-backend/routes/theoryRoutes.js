@@ -2,14 +2,17 @@
 const express = require("express");
 const Theory = require("../models/Theory");
 const authMiddleware = require("../middleware/authMiddleware");
-const { createTheory } = require("../controllers/theoryController");
+const {
+  createTheory,
+  reorderTheories,
+} = require("../controllers/theoryController");
 
 const router = express.Router();
 
 // Получение списка всех теорий
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const theories = await Theory.find();
+    const theories = await Theory.find().sort({ order: 1 }); // Извлечение всех теорий из базы
     res.json(theories); // Отправляем список всех теорий
   } catch (err) {
     console.error("Ошибка при получении теорий:", err);
@@ -31,5 +34,7 @@ router.get("/:slug", authMiddleware, async (req, res) => {
 });
 
 router.post("/create", authMiddleware, createTheory);
+
+router.put("/reorder", authMiddleware, reorderTheories);
 
 module.exports = router;

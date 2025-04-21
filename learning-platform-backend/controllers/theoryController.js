@@ -31,4 +31,28 @@ const createTheory = async (req, res) => {
   }
 };
 
-module.exports = { createTheory };
+const reorderTheories = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    const { theories } = req.body;
+
+    if (!theories || theories.length === 0) {
+      return res.status(400).json({ message: "Нет теорий для обновления" });
+    }
+
+    for (const theory of theories) {
+      await Theory.findByIdAndUpdate(theory._id, { order: theory.order });
+    }
+
+    res.status(200).json({ message: "Порядок теорий обновлен" });
+  } catch (error) {
+    console.error("Ошибка при обновлении порядка теорий:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+module.exports = { createTheory, reorderTheories };
