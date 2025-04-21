@@ -5,8 +5,7 @@ const User = require("../models/User");
 // Получение всех заданий
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find(); // Извлечение всех заданий из базы
-    console.log(tasks); // Логирование полученных заданий
+    const tasks = await Task.find().sort({ order: 1 }); // Извлечение всех заданий из базы
     res.json(tasks); // Отправка заданий в ответ
   } catch (error) {
     res.status(500).json({ message: "Ошибка при загрузке заданий" });
@@ -134,13 +133,9 @@ const checkSolution = async (req, res) => {
 const createTask = async (req, res) => {
   try {
     const user = await User.findById(req.user);
-    console.log("Пользователь из токена:", req.user);
     if (!user || user.role !== "admin") {
-      console.log("Пользователь не найден или нет прав");
       return res.status(403).json({ message: "Доступ запрещен" });
     }
-
-    console.log("Пользователь найден:", user);
 
     const {
       title,
@@ -166,6 +161,10 @@ const createTask = async (req, res) => {
       return res.status(400).json({ message: "Заполните все поля" });
     }
 
+    // ➔ Вот это новенькое:
+    const maxOrderTask = await Task.findOne().sort({ order: -1 });
+    const nextOrder = maxOrderTask ? maxOrderTask.order + 1 : 0;
+
     const newTask = new Task({
       title,
       description,
@@ -175,6 +174,7 @@ const createTask = async (req, res) => {
       tests,
       functionName,
       parameters,
+      order: nextOrder, // ➔ Ставим правильный порядок
     });
 
     await newTask.save();
@@ -185,4 +185,30 @@ const createTask = async (req, res) => {
   }
 };
 
-module.exports = { getAllTasks, getTaskById, checkSolution, createTask };
+const reorderTasks = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    const { tasks } = req.body;
+
+    for (const task of tasks) {
+      await Task.findByIdAndUpdate(task._id, { order: task.order });
+    }
+
+    res.status(200).json({ message: "Порядок задач обновлен" });
+  } catch (error) {
+    console.error("Ошибка при обновлении порядка задач:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+module.exports = {
+  getAllTasks,
+  getTaskById,
+  checkSolution,
+  createTask,
+  reorderTasks,
+};

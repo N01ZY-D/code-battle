@@ -4,6 +4,7 @@ const {
   getTaskById,
   checkSolution,
   createTask,
+  reorderTasks,
 } = require("../controllers/tasksController");
 const authMiddleware = require("../middleware/authMiddleware");
 //const { checkSolution } = require("../controllers/taskController");
@@ -18,5 +19,7 @@ router.get("/:taskId", getTaskById);
 router.post("/:taskId/check", authMiddleware, checkSolution);
 
 router.post("/create", authMiddleware, createTask);
+
+router.put("/reorder", authMiddleware, reorderTasks);
 
 module.exports = router;
