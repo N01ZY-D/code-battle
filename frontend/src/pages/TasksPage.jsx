@@ -102,7 +102,7 @@ const TasksPage = () => {
 
   return (
     <div className="tasks-page">
-      <h1 className="tasks-page__title">Список Заданий</h1>
+      <h1 className="tasks-page__title">Выберете задачу</h1>
       <div className="tasks-page__content">
         {tasks.length === 0 ? (
           <p className="tasks-page__no-tasks">Нет доступных заданий</p>
@@ -138,13 +138,13 @@ const TasksPage = () => {
             ))}
           </div>
         )}
+        <button
+          className="tasks-page__back-button"
+          onClick={handleBackToDashboard}
+        >
+          Вернуться в Dashboard
+        </button>
       </div>
-      <button
-        className="tasks-page__back-button"
-        onClick={handleBackToDashboard}
-      >
-        Вернуться в Dashboard
-      </button>
     </div>
   );
 };
