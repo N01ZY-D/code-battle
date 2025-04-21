@@ -1,0 +1,71 @@
+* {
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: none;
+}
+
+.create-theory-page {
+  margin: 0 auto;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.theory-form {
+  width: 500px;
+  padding-top: 20px;
+  padding-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #2c2f36;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #323844;
+  border: 1px solid #3f4552;
+  border-radius: 8px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #646cff;
+  outline: none;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}

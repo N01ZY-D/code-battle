@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/createTheoryPage.css";
 
 const CreateTheoryPage = () => {
   const navigate = useNavigate();
@@ -42,6 +43,11 @@ const CreateTheoryPage = () => {
     setTheoryData({ ...theoryData, [name]: value });
   };
 
+  const handleTextareaInput = (e) => {
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -76,41 +82,62 @@ const CreateTheoryPage = () => {
   }
 
   return (
-    <div>
-      <h2>Создание новой теории</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Название"
-          value={theoryData.title}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="slug"
-          placeholder="Уникальный URL (slug)"
-          value={theoryData.slug}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Категория"
-          value={theoryData.category}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="markdownContent"
-          placeholder="Markdown описание"
-          value={theoryData.markdownContent}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Создать теорию</button>
+    <div className="create-theory-page">
+      <h2 className="page-title">Создание новой теории</h2>
+      <form className="theory-form" onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="title">Название</label>
+          <input
+            id="title"
+            type="text"
+            name="title"
+            placeholder="Название"
+            value={theoryData.title}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="slug">Уникальный URL (slug)</label>
+          <input
+            id="slug"
+            type="text"
+            name="slug"
+            placeholder="Уникальный URL (slug)"
+            value={theoryData.slug}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="category">Категория</label>
+          <input
+            id="category"
+            type="text"
+            name="category"
+            placeholder="Категория"
+            value={theoryData.category}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="markdownContent">Markdown описание</label>
+          <textarea
+            id="markdownContent"
+            name="markdownContent"
+            placeholder="Markdown описание"
+            value={theoryData.markdownContent}
+            onChange={handleChange}
+            onInput={handleTextareaInput}
+            required
+          />
+        </div>
+        <div className="buttons">
+          <button type="submit" className="submit-button">
+            Создать теорию
+          </button>
+        </div>
       </form>
     </div>
   );
