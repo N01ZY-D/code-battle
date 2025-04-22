@@ -91,22 +91,25 @@ const ProfilePage = () => {
       </div>
 
       <div className="profile-right">
-        <p>Решено задач: {user.solvedTasksCount}</p>
-
-        <h3>Решения задач</h3>
+        <h3 className="profile-section-title">
+          Решения задач (уникальных задач решено: {user.solvedTasksCount})
+        </h3>
         {user?.solutions?.length > 0 ? (
-          <ul>
+          <div className="solutions-grid">
             {user.solutions.map((solution) => (
-              <li key={solution._id}>
-                <Link to={`/tasks/${solution.taskId._id}`}>
+              <div key={solution._id} className="solution-card">
+                <Link
+                  to={`/tasks/${solution.taskId._id}`}
+                  className="solution-title"
+                >
                   {solution.taskId.title}
                 </Link>
-                <pre>
+                <pre className="solution-code">
                   <code>{solution.code}</code>
                 </pre>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <p>Пока нет решений</p>
         )}
