@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import axios from "axios";
 import "../styles/profilePage.css"; // Импортируем стили для страницы профиля
@@ -93,19 +94,19 @@ const ProfilePage = () => {
         <p>Решено задач: {user.solvedTasksCount}</p>
 
         <h3>Решения задач</h3>
-        {user.solutions?.length > 0 ? (
-          user.solutions.map((solution, index) => (
-            <div key={index} className="profile-solution">
-              <p>
-                <strong>ID задачи:</strong> {solution.taskId}
-              </p>
-              <pre className="profile-solution-code">{solution.code}</pre>
-              <p>
-                <em>Дата отправки:</em>{" "}
-                {new Date(solution.createdAt).toLocaleString()}
-              </p>
-            </div>
-          ))
+        {user?.solutions?.length > 0 ? (
+          <ul>
+            {user.solutions.map((solution) => (
+              <li key={solution._id}>
+                <Link to={`/tasks/${solution.taskId._id}`}>
+                  {solution.taskId.title}
+                </Link>
+                <pre>
+                  <code>{solution.code}</code>
+                </pre>
+              </li>
+            ))}
+          </ul>
         ) : (
           <p>Пока нет решений</p>
         )}
