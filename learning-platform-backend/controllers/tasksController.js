@@ -109,11 +109,24 @@ const checkSolution = async (req, res) => {
 
     if (allTestsPassed) {
       if (hasSolvedTaskBefore) {
+        user.solutions.push({
+          taskId: taskId,
+          code: code,
+          createdAt: new Date(),
+        });
+        await user.save();
+
         return res.json({ success: true, message: "Правильный код!" });
       }
 
       user.solvedTasks.push(taskId);
-      user.solvedTasksCount += 1; // Увеличиваем счётчик решённых задач
+      user.solvedTasksCount += 1;
+      user.solutions.push({
+        taskId: taskId,
+        code: code,
+        createdAt: new Date(),
+      });
+
       await user.save();
 
       return res.json({ success: true, message: "Правильный код!" });

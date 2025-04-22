@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import axios from "axios";
 import "../styles/profilePage.css"; // Импортируем стили для страницы профиля
@@ -90,7 +91,28 @@ const ProfilePage = () => {
       </div>
 
       <div className="profile-right">
-        <p>Решено задач: {user.solvedTasksCount}</p>
+        <h3 className="profile-section-title">
+          Решения задач (уникальных задач решено: {user.solvedTasksCount})
+        </h3>
+        {user?.solutions?.length > 0 ? (
+          <div className="solutions-grid">
+            {user.solutions.map((solution) => (
+              <div key={solution._id} className="solution-card">
+                <Link
+                  to={`/tasks/${solution.taskId._id}`}
+                  className="solution-title"
+                >
+                  {solution.taskId.title}
+                </Link>
+                <pre className="solution-code">
+                  <code>{solution.code}</code>
+                </pre>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>Пока нет решений</p>
+        )}
       </div>
     </div>
   );
