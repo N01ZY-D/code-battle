@@ -18,6 +18,17 @@ const userSchema = new mongoose.Schema({
     ref: "Task",
     default: undefined,
   }, // массив ID решённых задач
+  solutions: [
+    {
+      taskId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Task",
+        required: true,
+      },
+      code: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);

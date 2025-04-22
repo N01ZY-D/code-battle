@@ -91,6 +91,24 @@ const ProfilePage = () => {
 
       <div className="profile-right">
         <p>Решено задач: {user.solvedTasksCount}</p>
+
+        <h3>Решения задач</h3>
+        {user.solutions?.length > 0 ? (
+          user.solutions.map((solution, index) => (
+            <div key={index} className="profile-solution">
+              <p>
+                <strong>ID задачи:</strong> {solution.taskId}
+              </p>
+              <pre className="profile-solution-code">{solution.code}</pre>
+              <p>
+                <em>Дата отправки:</em>{" "}
+                {new Date(solution.createdAt).toLocaleString()}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>Пока нет решений</p>
+        )}
       </div>
     </div>
   );
