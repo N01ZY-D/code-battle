@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
-import "../styles/RegisterPage.css"; // Импортируем стили для страницы регистрации
+import "../styles/registerPage.css"; // Импортируем стили для страницы регистрации
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
