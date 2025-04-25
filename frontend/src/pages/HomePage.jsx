@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../styles/HomePage.css"; // Импортируем стили для главной страницы
+import "../styles/homePage.css"; // Импортируем стили для главной страницы
 
 const HomePage = () => {
   return (
