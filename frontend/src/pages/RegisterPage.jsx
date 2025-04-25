@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
+import "../styles/RegisterPage.css"; // Импортируем стили для страницы регистрации
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -30,45 +31,51 @@ const RegisterPage = () => {
   };
 
   return (
-    <div>
-      <h1>Регистрация</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="register-container">
+      <div className="register-box">
+        <h1 className="register-title">Регистрация</h1>
+        <form className="register-form" onSubmit={handleSubmit}>
+          <div className="register-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="register-group">
+            <label>Пароль</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="register-group">
+            <label>Никнейм</label>
+            <input
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+            />
+          </div>
+          {error && <p className="register-error">{error}</p>}
+          <button type="submit" className="register-button">
+            Зарегистрироваться
+          </button>
+        </form>
+        <div className="register-links">
+          <p>
+            Уже есть аккаунт? <Link to="/login">Войти</Link>
+          </p>
+          <p>
+            Вернуться на <Link to="/">главную</Link>
+          </p>
         </div>
-        <div>
-          <label>Пароль</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Никнейм</label>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p>{error}</p>}
-        <button type="submit">Зарегистрироваться</button>
-      </form>
-      <p>
-        Уже есть аккаунт? <Link to="/login">Войти</Link>{" "}
-      </p>
-      <p>
-        Вернуться на <Link to="/">главную</Link>
-      </p>
+      </div>
     </div>
   );
 };
