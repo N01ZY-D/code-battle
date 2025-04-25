@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
 import AuthContext from "../context/AuthContext"; // Импортируем контекст
-import "../styles/LoginPage.css"; // Импортируем стили для страницы логина
+import "../styles/loginPage.css"; // Импортируем стили для страницы логина
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
