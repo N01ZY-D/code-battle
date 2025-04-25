@@ -1,0 +1,43 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.home-title {
+  margin: 0;
+}
+
+.home-description {
+  margin: 0;
+}
+
+.home-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+}
+
+.home-button {
+  flex: 0 0 48%; /* Каждая кнопка будет занимать 48% ширины */
+}
+
+.home-button button {
+  width: 100%; /* Делаем кнопку на 100% ширины своего контейнера */
+  text-align: center;
+  padding: 12px 0;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.home-button button:hover {
+  background-color: #344756;
+}
