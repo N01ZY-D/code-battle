@@ -1,19 +1,19 @@
-.dashboard-container {
+.home-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
 }
 
-.dashboard-title {
+.home-title {
   margin: 0;
 }
 
-.dashboard-description {
+.home-description {
   margin: 0;
 }
 
-.dashboard-buttons {
+.home-buttons {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -21,11 +21,11 @@
   justify-content: center;
 }
 
-.dashboard-button {
+.home-button {
   flex: 0 0 48%; /* Каждая кнопка будет занимать 48% ширины */
 }
 
-.dashboard-button button {
+.home-button button {
   width: 100%; /* Делаем кнопку на 100% ширины своего контейнера */
   text-align: center;
   padding: 12px 0;
@@ -38,6 +38,6 @@
   transition: background-color 0.3s ease;
 }
 
-.dashboard-button button:hover {
+.home-button button:hover {
   background-color: #344756;
 }
