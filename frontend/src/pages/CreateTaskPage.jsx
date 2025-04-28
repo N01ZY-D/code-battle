@@ -46,12 +46,20 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   useEffect(() => {
     if (initialData) {
       setTaskData(initialData);
+
+      setTimeout(() => {
+        const textareas = document.querySelectorAll("textarea");
+        textareas.forEach((textarea) => {
+          textarea.style.height = "auto";
+          textarea.style.height = `${textarea.scrollHeight + 2}px`;
+        });
+      }, 100);
     }
   }, [initialData]);
 
   const handleTextareaInput = (e) => {
     e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight}px`;
+    e.target.style.height = `${e.target.scrollHeight + 2}px`;
   };
 
   const handleChange = (e) => {

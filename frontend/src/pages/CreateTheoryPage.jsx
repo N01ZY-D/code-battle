@@ -29,7 +29,7 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         if (response.ok) {
           const data = await response.json();
           setUser(data);
-          if (data.role !== "admin") navigate("/"); // Перенаправляем не-администраторов
+          if (data.role !== "admin") navigate("/dashboard"); // Перенаправляем не-администраторов
         }
       } catch (error) {
         console.error("Ошибка загрузки пользователя:", error);
@@ -48,6 +48,13 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         category: initialData.category,
         markdownContent: initialData.markdownContent,
       });
+      setTimeout(() => {
+        const textareas = document.querySelectorAll("textarea");
+        textareas.forEach((textarea) => {
+          textarea.style.height = "auto";
+          textarea.style.height = `${textarea.scrollHeight + 2}px`;
+        });
+      }, 100);
     }
   }, [slug, initialData]); // Заполняем форму, если получены данные для редактирования
 
@@ -60,7 +67,7 @@ const CreateTheoryPage = ({ slug, initialData }) => {
   // Обработчик изменений высоты текстового поля
   const handleTextareaInput = (e) => {
     e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight}px`;
+    e.target.style.height = `${e.target.scrollHeight + 2}px`;
   };
 
   // Обработчик отправки формы
