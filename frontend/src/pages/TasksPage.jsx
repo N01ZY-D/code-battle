@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/tasksPage.css"; // Импортируем стили для страницы заданий
 
 const TasksPage = () => {
@@ -132,6 +132,11 @@ const TasksPage = () => {
                     >
                       Вниз
                     </button>
+                    <Link to={`/tasks/edit/${task._id}`}>
+                      <button className="tasks-page__edit-button">
+                        Редактировать
+                      </button>
+                    </Link>
                   </div>
                 )}
               </div>

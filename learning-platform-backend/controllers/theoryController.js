@@ -31,6 +31,26 @@ const createTheory = async (req, res) => {
   }
 };
 
+const updateTheory = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    const { theoryId } = req.params;
+    const updates = req.body;
+
+    const updatedTheory = await Theory.findByIdAndUpdate(theoryId, updates, {
+      new: true,
+    });
+
+    res.json({ message: "Теория обновлена", theory: updatedTheory });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 const reorderTheories = async (req, res) => {
   try {
     const user = await User.findById(req.user);
@@ -55,4 +75,4 @@ const reorderTheories = async (req, res) => {
   }
 };
 
-module.exports = { createTheory, reorderTheories };
+module.exports = { createTheory, updateTheory, reorderTheories };
