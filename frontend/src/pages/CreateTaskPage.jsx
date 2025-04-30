@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import "../styles/createTaskPage.css";
 
 const CreateTaskPage = ({ mode = "create", initialData = null }) => {
@@ -269,6 +269,11 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
           <button type="submit" className="submit-button">
             {mode === "edit" ? "Сохранить изменения" : "Создать задачу"}
           </button>
+          {mode === "edit" && (
+            <Link to="/tasks">
+              <button>Назад к списку задач</button>
+            </Link>
+          )}
         </div>
       </form>
     </div>

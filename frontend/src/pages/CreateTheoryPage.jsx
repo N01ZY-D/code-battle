@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/createTheoryPage.css";
 
 const CreateTheoryPage = ({ slug, initialData }) => {
@@ -175,6 +175,11 @@ const CreateTheoryPage = ({ slug, initialData }) => {
           <button type="submit" className="submit-button">
             {slug ? "Обновить теорию" : "Создать теорию"}
           </button>
+          {slug && (
+            <Link to="/theory">
+              <button>Назад к списку теорий</button>
+            </Link>
+          )}
         </div>
       </form>
     </div>
