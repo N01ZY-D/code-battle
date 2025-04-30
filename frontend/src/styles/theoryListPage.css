@@ -25,6 +25,7 @@
 .tasks-page__item {
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 10px;
   background-color: #344756;
   border-radius: 8px;
@@ -53,10 +54,15 @@
   display: flex;
   flex-direction: row;
   gap: 5px;
+  background-color: peru;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .theory-list-page__move-button,
-.tasks-page__move-button {
+.tasks-page__move-button,
+.theory-list-page__edit-button,
+.tasks-page__edit-button {
   padding: 5px 10px;
   height: 50px; /* Делаем ту же высоту, что и у page_button */
   font-size: 14px; /* Можно чуть меньше шрифт, если хочется */

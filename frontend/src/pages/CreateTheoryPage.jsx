@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/createTheoryPage.css";
 
-const CreateTheoryPage = () => {
+const CreateTheoryPage = ({ slug, initialData }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [theoryData, setTheoryData] = useState({
@@ -12,6 +12,7 @@ const CreateTheoryPage = () => {
     markdownContent: "",
   });
 
+  // Получаем информацию о пользователе и проверяем роль администратора
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
@@ -28,7 +29,7 @@ const CreateTheoryPage = () => {
         if (response.ok) {
           const data = await response.json();
           setUser(data);
-          if (data.role !== "admin") navigate("/"); // Не пускаем обычных пользователей
+          if (data.role !== "admin") navigate("/dashboard"); // Перенаправляем не-администраторов
         }
       } catch (error) {
         console.error("Ошибка загрузки пользователя:", error);
@@ -38,42 +39,76 @@ const CreateTheoryPage = () => {
     fetchUser();
   }, [navigate]);
 
+  // Если переданы данные для редактирования, заполняем их в состояние
+  useEffect(() => {
+    if (slug && initialData) {
+      setTheoryData({
+        title: initialData.title,
+        slug: initialData.slug,
+        category: initialData.category,
+        markdownContent: initialData.markdownContent,
+      });
+      setTimeout(() => {
+        const textareas = document.querySelectorAll("textarea");
+        textareas.forEach((textarea) => {
+          textarea.style.height = "auto";
+          textarea.style.height = `${textarea.scrollHeight + 2}px`;
+        });
+      }, 100);
+    }
+  }, [slug, initialData]); // Заполняем форму, если получены данные для редактирования
+
+  // Обработчик изменений
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTheoryData({ ...theoryData, [name]: value });
   };
 
+  // Обработчик изменений высоты текстового поля
   const handleTextareaInput = (e) => {
     e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight}px`;
+    e.target.style.height = `${e.target.scrollHeight + 2}px`;
   };
 
+  // Обработчик отправки формы
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Логируем отправляемые данные
+    console.log("Отправляемые данные:", theoryData);
+
     const token = localStorage.getItem("token");
+    const method = slug ? "PUT" : "POST"; // PUT для редактирования, POST для создания
+    const url = slug
+      ? `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory/${slug}`
+      : `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory/create`;
+
+    console.log("URL запроса:", url); // Логируем URL, куда отправляется запрос
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory/create`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(theoryData),
-        }
-      );
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(theoryData),
+      });
+
+      // Логируем статус ответа
+      console.log("Ответ от сервера:", response);
 
       if (response.ok) {
-        alert("Теория успешно создана!");
-        navigate("/dashboard");
+        alert("Теория успешно " + (slug ? "обновлена" : "создана"));
+        navigate("/theory");
       } else {
         const errorData = await response.json();
+        // Логируем ошибку, если запрос не прошел
+        console.log("Ошибка от сервера:", errorData);
         alert(`Ошибка: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Ошибка при создании теории:", error);
+      console.error("Ошибка при сохранении теории:", error);
     }
   };
 
@@ -83,7 +118,9 @@ const CreateTheoryPage = () => {
 
   return (
     <div className="create-theory-page">
-      <h2 className="page-title">Создание новой теории</h2>
+      <h2 className="page-title">
+        {slug ? "Редактирование теории" : "Создание новой теории"}
+      </h2>
       <form className="theory-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">Название</label>
@@ -107,6 +144,7 @@ const CreateTheoryPage = () => {
             value={theoryData.slug}
             onChange={handleChange}
             required
+            disabled={slug !== undefined} // Slug отключён в режиме редактирования
           />
         </div>
         <div className="form-group">
@@ -135,8 +173,13 @@ const CreateTheoryPage = () => {
         </div>
         <div className="buttons">
           <button type="submit" className="submit-button">
-            Создать теорию
+            {slug ? "Обновить теорию" : "Создать теорию"}
           </button>
+          {slug && (
+            <Link to="/theory">
+              <button>Назад к списку теорий</button>
+            </Link>
+          )}
         </div>
       </form>
     </div>

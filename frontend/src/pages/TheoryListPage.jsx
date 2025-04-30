@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/theoryListPage.css"; // Импортируем стили для страницы теорий
 
 const TheoryListPage = () => {
@@ -151,6 +151,11 @@ const TheoryListPage = () => {
                   >
                     Вниз
                   </button>
+                  <Link to={`/theories/edit/${theory.slug}`}>
+                    <button className="theory-list-page__edit-button">
+                      Редактировать
+                    </button>
+                  </Link>
                 </div>
               )}
             </div>

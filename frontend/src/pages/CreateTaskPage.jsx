@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/createTaskPage.css"; // Импортируем стили для страницы создания задачи
+import { useNavigate, useParams, Link } from "react-router-dom";
+import "../styles/createTaskPage.css";
 
-const CreateTaskPage = () => {
+const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   const navigate = useNavigate();
+  const { taskId } = useParams();
   const [user, setUser] = useState(null);
   const [taskData, setTaskData] = useState({
     title: "",
@@ -32,7 +33,7 @@ const CreateTaskPage = () => {
         if (response.ok) {
           const data = await response.json();
           setUser(data);
-          if (data.role !== "admin") navigate("/"); // Не пускаем обычных пользователей
+          if (data.role !== "admin") navigate("/");
         }
       } catch (error) {
         console.error("Ошибка загрузки пользователя:", error);
@@ -42,9 +43,23 @@ const CreateTaskPage = () => {
     fetchUser();
   }, [navigate]);
 
+  useEffect(() => {
+    if (initialData) {
+      setTaskData(initialData);
+
+      setTimeout(() => {
+        const textareas = document.querySelectorAll("textarea");
+        textareas.forEach((textarea) => {
+          textarea.style.height = "auto";
+          textarea.style.height = `${textarea.scrollHeight + 2}px`;
+        });
+      }, 100);
+    }
+  }, [initialData]);
+
   const handleTextareaInput = (e) => {
-    e.target.style.height = "auto"; // Сначала сбрасываем высоту
-    e.target.style.height = `${e.target.scrollHeight}px`; // Потом подстраиваем под содержимое
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight + 2}px`;
   };
 
   const handleChange = (e) => {
@@ -67,7 +82,7 @@ const CreateTaskPage = () => {
   };
 
   const removeTest = (index) => {
-    if (taskData.tests.length <= 1) return; // Если остался только один тест — ничего не делаем
+    if (taskData.tests.length <= 1) return;
     const updatedTests = taskData.tests.filter((_, i) => i !== index);
     setTaskData({ ...taskData, tests: updatedTests });
   };
@@ -77,27 +92,42 @@ const CreateTaskPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks/create`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(taskData),
-        }
-      );
+      const url =
+        mode === "edit"
+          ? `${
+              import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+            }/api/tasks/${taskId}`
+          : `${
+              import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+            }/api/tasks/create`;
+
+      const method = mode === "edit" ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(taskData),
+      });
 
       if (response.ok) {
-        alert("Задача успешно создана!");
-        navigate("/dashboard");
+        alert(
+          mode === "edit"
+            ? "Задача успешно обновлена!"
+            : "Задача успешно создана!"
+        );
+        navigate("/tasks");
       } else {
         const errorData = await response.json();
         alert(`Ошибка: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Ошибка при создании задачи:", error);
+      console.error(
+        `Ошибка при ${mode === "edit" ? "обновлении" : "создании"} задачи:`,
+        error
+      );
     }
   };
 
@@ -107,8 +137,11 @@ const CreateTaskPage = () => {
 
   return (
     <div className="create-task-page">
-      <h2 className="page-title">Создание новой задачи</h2>
+      <h2 className="page-title">
+        {mode === "edit" ? "Редактирование задачи" : "Создание новой задачи"}
+      </h2>
       <form className="task-form" onSubmit={handleSubmit}>
+        {/* Инпуты формы остаются без изменений */}
         <div className="form-group">
           <label htmlFor="title">Название</label>
           <input
@@ -122,7 +155,7 @@ const CreateTaskPage = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="">Описание</label>
+          <label htmlFor="description">Описание</label>
           <textarea
             id="description"
             name="description"
@@ -234,8 +267,13 @@ const CreateTaskPage = () => {
             Добавить тест
           </button>
           <button type="submit" className="submit-button">
-            Создать задачу
+            {mode === "edit" ? "Сохранить изменения" : "Создать задачу"}
           </button>
+          {mode === "edit" && (
+            <Link to="/tasks">
+              <button>Назад к списку задач</button>
+            </Link>
+          )}
         </div>
       </form>
     </div>

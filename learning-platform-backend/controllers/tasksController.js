@@ -198,6 +198,26 @@ const createTask = async (req, res) => {
   }
 };
 
+const updateTask = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    const { taskId } = req.params;
+    const updates = req.body;
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updates, {
+      new: true,
+    });
+
+    res.json({ message: "Задача обновлена", task: updatedTask });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 const reorderTasks = async (req, res) => {
   try {
     const user = await User.findById(req.user);
@@ -223,5 +243,6 @@ module.exports = {
   getTaskById,
   checkSolution,
   createTask,
+  updateTask,
   reorderTasks,
 };
