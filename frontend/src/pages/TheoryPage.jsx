@@ -9,8 +9,39 @@ import "../styles/theoryPage.css"; // Импортируем стили для �
 const TheoryPage = () => {
   const { slug } = useParams(); // Получаем slug из URL
   const [theory, setTheory] = useState(null); // Состояние для хранения теории
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("Токен отсутствует");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          console.error(
+            "Ошибка при загрузке данных пользователя:",
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Ошибка при загрузке данных пользователя:", error);
+      }
+    };
     const fetchTheory = async () => {
       try {
         // Запрос на получение теории по slug
@@ -30,6 +61,7 @@ const TheoryPage = () => {
       }
     };
 
+    fetchUser(); // Загружаем данные пользователя
     if (slug) fetchTheory(); // Загружаем теорию, если есть slug
   }, [slug]); // Эффект сработает при изменении slug
 
@@ -38,14 +70,26 @@ const TheoryPage = () => {
       {theory ? (
         <div className="main-content">
           <h1>{theory.title}</h1>
+          <div className="upper-button-container">
+            <Link to="/theory">
+              <button>Назад к списку теорий</button>
+            </Link>
+            {user && user.role === "admin" && (
+              <Link to={`/theories/edit/${theory.slug}`}>
+                <button>Редактировать</button>
+              </Link>
+            )}
+          </div>
           <h3>{theory.category}</h3>
           <ReactMarkdown
             children={theory.markdownContent}
             remarkPlugins={[remarkGfm]}
           />
-          <Link to="/theory">
-            <button>Назад к списку теорий</button>
-          </Link>
+          <div className="lower-button-container">
+            <Link to="/theory">
+              <button>Назад к списку теорий</button>
+            </Link>
+          </div>
         </div>
       ) : (
         <p>Загрузка...</p> // Показываем сообщение пока данные загружаются

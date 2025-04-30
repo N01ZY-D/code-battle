@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/theoryListPage.css"; // Импортируем стили для страницы теорий
+import "../styles/theoryListPage.css";
 
 const TheoryListPage = () => {
   const [theories, setTheories] = useState([]);

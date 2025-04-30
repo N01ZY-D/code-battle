@@ -34,3 +34,17 @@ code {
   display: block; /* Блочный элемент для центрирования */
   margin: 20px auto; /* Центрирует изображение и добавляет отступы */
 }
+
+.upper-button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.upper-button-container button:hover,
+.lower-button-container button:hover {
+  background-color: #344756;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
