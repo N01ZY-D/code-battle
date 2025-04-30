@@ -37,6 +37,8 @@ router.get("/:slug", authMiddleware, async (req, res) => {
 
 router.post("/create", authMiddleware, createTheory);
 
+router.put("/reorder", authMiddleware, reorderTheories);
+
 // Обновление теории по ID
 router.put("/:slug", authMiddleware, async (req, res) => {
   try {
@@ -51,7 +53,6 @@ router.put("/:slug", authMiddleware, async (req, res) => {
     theory.title = req.body.title;
     theory.markdownContent = req.body.markdownContent;
     theory.category = req.body.category;
-    theory.order = req.body.order;
 
     await theory.save(); // Сохраняем изменения
     res.json(theory); // Отправляем обновленную теорию
@@ -60,7 +61,5 @@ router.put("/:slug", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
-
-router.put("/reorder", authMiddleware, reorderTheories);
 
 module.exports = router;
