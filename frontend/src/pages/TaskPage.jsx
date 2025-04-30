@@ -10,8 +10,39 @@ const TaskPage = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [failedTests, setFailedTests] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("Токен отсутствует");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          console.error(
+            "Ошибка при загрузке данных пользователя:",
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Ошибка при загрузке данных пользователя:", error);
+      }
+    };
     const fetchTask = async () => {
       try {
         const response = await axios.get(
@@ -40,6 +71,7 @@ const TaskPage = () => {
       }
     };
 
+    fetchUser();
     if (taskId) fetchTask();
   }, [taskId]);
 
@@ -120,10 +152,16 @@ const TaskPage = () => {
         <strong>Категория:</strong> {task.category} |{" "}
         <strong>Сложность:</strong> {task.difficulty}
       </p>
-
-      <Link to="/tasks">
-        <button style={{ marginBottom: "10px" }}>Назад к списку задач</button>
-      </Link>
+      <div className="upper-button-container">
+        <Link to="/tasks">
+          <button>Назад к списку задач</button>
+        </Link>
+        {user && user.role === "admin" && (
+          <Link to={`/tasks/edit/${task._id}`}>
+            <button>Редактировать</button>
+          </Link>
+        )}
+      </div>
 
       <h3>Условие:</h3>
       <ReactMarkdown>{task.markdownContent}</ReactMarkdown>
