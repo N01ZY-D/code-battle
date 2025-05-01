@@ -1,0 +1,45 @@
+.markdown-editor-container {
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+
+.tabs button.active {
+  background-color: #323844;
+  border: 2px white solid;
+}
+
+.tab-content {
+  width: 100%;
+}
+
+.markdown-textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: none;
+  border: 1px dashed #ccc;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 14px;
+  background-color: #323844;
+}
+
+.markdown-preview {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #323844;
+}
