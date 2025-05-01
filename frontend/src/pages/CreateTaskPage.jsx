@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import "../styles/createTaskPage.css";
+import MarkdownEditorPreview from "../components/MarkdownEditorPreview"; // путь подстрой под свою структуру
 
 const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   const navigate = useNavigate();
@@ -192,14 +193,12 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
         </div>
         <div className="form-group">
           <label htmlFor="markdownContent">Markdown описание</label>
-          <textarea
-            id="markdownContent"
-            name="markdownContent"
-            placeholder="Markdown описание"
+          <MarkdownEditorPreview
             value={taskData.markdownContent}
-            onChange={handleChange}
-            onInput={handleTextareaInput}
-            required
+            onChange={(val) =>
+              setTaskData({ ...taskData, markdownContent: val })
+            }
+            placeholder="Markdown описание"
           />
         </div>
         <div className="form-group">

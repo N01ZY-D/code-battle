@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/createTheoryPage.css";
+import MarkdownEditorPreview from "../components/MarkdownEditorPreview"; // путь подстрой под свою структуру
 
 const CreateTheoryPage = ({ slug, initialData }) => {
   const navigate = useNavigate();
@@ -161,16 +162,15 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         </div>
         <div className="form-group">
           <label htmlFor="markdownContent">Markdown описание</label>
-          <textarea
-            id="markdownContent"
-            name="markdownContent"
-            placeholder="Markdown описание"
+          <MarkdownEditorPreview
             value={theoryData.markdownContent}
-            onChange={handleChange}
-            onInput={handleTextareaInput}
-            required
+            onChange={(val) =>
+              setTheoryData({ ...theoryData, markdownContent: val })
+            }
+            placeholder="Напишите содержание в формате Markdown..."
           />
         </div>
+
         <div className="buttons">
           <button type="submit" className="submit-button">
             {slug ? "Обновить теорию" : "Создать теорию"}
