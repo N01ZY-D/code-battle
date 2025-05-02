@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/tasksPage.css"; // Импортируем стили для страницы заданий
+import {
+  FiArrowUp,
+  FiArrowDown,
+  FiEdit,
+  FiTrash,
+  FiTrash2,
+} from "react-icons/fi";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -146,25 +153,25 @@ const TasksPage = () => {
                       onClick={() => handleMoveTask(task._id, "up")}
                       disabled={index === 0} // Отключаем кнопку "вверх", если задание первое
                     >
-                      Вверх
+                      <FiArrowUp size={18} />
                     </button>
                     <button
                       className="tasks-page__move-button"
                       onClick={() => handleMoveTask(task._id, "down")}
                       disabled={index === tasks.length - 1} // Отключаем кнопку "вниз", если задание последнее
                     >
-                      Вниз
+                      <FiArrowDown size={18} />
                     </button>
                     <Link to={`/tasks/edit/${task._id}`}>
                       <button className="tasks-page__edit-button">
-                        Редактировать
+                        <FiEdit size={18} />
                       </button>
                     </Link>
                     <button
                       className="tasks-page__delete-button"
                       onClick={() => handleDeleteTask(task._id)}
                     >
-                      Удалить
+                      <FiTrash2 size={18} />
                     </button>
                   </div>
                 )}
