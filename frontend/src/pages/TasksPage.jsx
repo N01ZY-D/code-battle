@@ -96,6 +96,29 @@ const TasksPage = () => {
     }
   };
 
+  const handleDeleteTask = async (taskId) => {
+    const confirm = window.confirm(
+      "Вы уверены, что хотите удалить эту задачу?"
+    );
+    if (!confirm) return;
+
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Обновляем список задач
+      setTasks(tasks.filter((task) => task._id !== taskId));
+    } catch (error) {
+      console.error("Ошибка при удалении задачи:", error);
+    }
+  };
+
   const handleBackToDashboard = () => {
     navigate("/dashboard");
   };
@@ -137,6 +160,12 @@ const TasksPage = () => {
                         Редактировать
                       </button>
                     </Link>
+                    <button
+                      className="tasks-page__delete-button"
+                      onClick={() => handleDeleteTask(task._id)}
+                    >
+                      Удалить
+                    </button>
                   </div>
                 )}
               </div>
