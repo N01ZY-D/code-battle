@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
 import "../styles/theoryPage.css"; // Импортируем стили для страницы теории
+import { FiEdit } from "react-icons/fi";
 
 const TheoryPage = () => {
   const { slug } = useParams(); // Получаем slug из URL
@@ -76,7 +77,9 @@ const TheoryPage = () => {
             </Link>
             {user && user.role === "admin" && (
               <Link to={`/theories/edit/${theory.slug}`}>
-                <button>Редактировать</button>
+                <button>
+                  <FiEdit size={18} />
+                </button>
               </Link>
             )}
           </div>

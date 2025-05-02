@@ -6,6 +6,7 @@ const {
   createTask,
   updateTask,
   reorderTasks,
+  deleteTask,
 } = require("../controllers/tasksController");
 const authMiddleware = require("../middleware/authMiddleware");
 //const { checkSolution } = require("../controllers/taskController");
@@ -24,5 +25,7 @@ router.post("/create", authMiddleware, createTask);
 router.patch("/:taskId", authMiddleware, updateTask);
 
 router.put("/reorder", authMiddleware, reorderTasks);
+
+router.delete("/:taskId", authMiddleware, deleteTask);
 
 module.exports = router;

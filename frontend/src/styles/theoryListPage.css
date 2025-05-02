@@ -59,12 +59,23 @@
   border-radius: 5px;
 }
 
+.theory-list-page__buttons button:hover,
+.tasks-page__buttons button:hover {
+  background-color: #344756;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
 .theory-list-page__move-button,
 .tasks-page__move-button,
 .theory-list-page__edit-button,
-.tasks-page__edit-button {
-  padding: 5px 10px;
+.tasks-page__edit-button,
+.theory-list-page__delete-button,
+.tasks-page__delete-button {
+  padding: auto;
   height: 50px; /* Делаем ту же высоту, что и у page_button */
+  width: 50px;
   font-size: 14px; /* Можно чуть меньше шрифт, если хочется */
 }
 

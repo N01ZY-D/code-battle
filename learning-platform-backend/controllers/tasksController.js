@@ -238,6 +238,27 @@ const reorderTasks = async (req, res) => {
   }
 };
 
+const deleteTask = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    const { taskId } = req.params;
+
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+    if (!deletedTask) {
+      return res.status(404).json({ message: "Задача не найдена" });
+    }
+
+    res.json({ message: "Задача удалена" });
+  } catch (error) {
+    console.error("Ошибка при удалении задачи:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 module.exports = {
   getAllTasks,
   getTaskById,
@@ -245,4 +266,5 @@ module.exports = {
   createTask,
   updateTask,
   reorderTasks,
+  deleteTask,
 };
