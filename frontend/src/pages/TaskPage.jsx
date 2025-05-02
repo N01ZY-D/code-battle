@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { FiEdit } from "react-icons/fi";
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -158,7 +159,9 @@ const TaskPage = () => {
         </Link>
         {user && user.role === "admin" && (
           <Link to={`/tasks/edit/${task._id}`}>
-            <button>Редактировать</button>
+            <button>
+              <FiEdit size={18} />
+            </button>
           </Link>
         )}
       </div>

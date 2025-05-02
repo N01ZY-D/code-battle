@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/theoryListPage.css";
+import { FiArrowUp, FiArrowDown, FiEdit, FiTrash2 } from "react-icons/fi";
 
 const TheoryListPage = () => {
   const [theories, setTheories] = useState([]);
@@ -167,25 +168,25 @@ const TheoryListPage = () => {
                     onClick={() => handleMoveTheory(theory._id, "up")}
                     disabled={index === 0} // Отключаем кнопку "вверх", если теория первая
                   >
-                    Вверх
+                    <FiArrowUp size={18} />
                   </button>
                   <button
                     className="theory-list-page__move-button"
                     onClick={() => handleMoveTheory(theory._id, "down")}
                     disabled={index === theories.length - 1} // Отключаем кнопку "вниз", если теория последняя
                   >
-                    Вниз
+                    <FiArrowDown size={18} />
                   </button>
                   <Link to={`/theories/edit/${theory.slug}`}>
                     <button className="theory-list-page__edit-button">
-                      Редактировать
+                      <FiEdit size={18} />
                     </button>
                   </Link>
                   <button
                     className="theory-list-page__delete-button"
                     onClick={() => handleDeleteTheory(theory.slug)}
                   >
-                    Удалить
+                    <FiTrash2 size={18} />
                   </button>
                 </div>
               )}

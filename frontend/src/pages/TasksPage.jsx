@@ -2,13 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/tasksPage.css"; // Импортируем стили для страницы заданий
-import {
-  FiArrowUp,
-  FiArrowDown,
-  FiEdit,
-  FiTrash,
-  FiTrash2,
-} from "react-icons/fi";
+import { FiArrowUp, FiArrowDown, FiEdit, FiTrash2 } from "react-icons/fi";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
