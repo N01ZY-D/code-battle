@@ -7,6 +7,7 @@ const {
   createTheory,
   updateTheory,
   reorderTheories,
+  deleteTheory,
 } = require("../controllers/theoryController");
 
 const router = express.Router();
@@ -39,7 +40,6 @@ router.post("/create", authMiddleware, createTheory);
 
 router.put("/reorder", authMiddleware, reorderTheories);
 
-// Обновление теории по ID
 router.put("/:slug", authMiddleware, async (req, res) => {
   try {
     // Используйте slug для поиска
@@ -61,5 +61,7 @@ router.put("/:slug", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+
+router.delete("/:slug", authMiddleware, deleteTheory);
 
 module.exports = router;

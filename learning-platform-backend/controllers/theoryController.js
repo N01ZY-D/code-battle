@@ -75,4 +75,27 @@ const reorderTheories = async (req, res) => {
   }
 };
 
-module.exports = { createTheory, updateTheory, reorderTheories };
+const deleteTheory = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Доступ запрещен" });
+    }
+
+    const { slug } = req.params;
+    const deleted = await Theory.findOneAndDelete({ slug });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Теория не найдена" });
+    }
+
+    res.status(200).json({ message: "Теория удалена" });
+  } catch (error) {
+    console.error("Ошибка при удалении теории:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+module.exports = { createTheory, updateTheory, reorderTheories, deleteTheory };
+
+module.exports = { createTheory, updateTheory, reorderTheories, deleteTheory };

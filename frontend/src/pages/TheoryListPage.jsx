@@ -118,6 +118,31 @@ const TheoryListPage = () => {
     }
   };
 
+  const handleDeleteTheory = async (slug) => {
+    if (!window.confirm("Вы уверены, что хотите удалить эту теорию?")) return;
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory/${slug}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        setTheories((prev) => prev.filter((t) => t.slug !== slug));
+      } else {
+        const error = await response.json();
+        alert("Ошибка: " + error.message);
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении:", error);
+    }
+  };
+
   const handleBackToDashboard = () => {
     navigate("/dashboard");
   };
@@ -156,6 +181,12 @@ const TheoryListPage = () => {
                       Редактировать
                     </button>
                   </Link>
+                  <button
+                    className="theory-list-page__delete-button"
+                    onClick={() => handleDeleteTheory(theory.slug)}
+                  >
+                    Удалить
+                  </button>
                 </div>
               )}
             </div>
