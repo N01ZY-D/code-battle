@@ -1,6 +1,7 @@
 .main-content {
-  margin-top: 100px;
-  margin-bottom: 60px;
+  margin: 100px auto 60px auto;
+  padding: 0 1rem;
+  max-width: 950px;
 }
 
 .main-task-content {
