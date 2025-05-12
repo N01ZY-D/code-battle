@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { FiEdit } from "react-icons/fi";
+import Editor from "@monaco-editor/react";
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -181,13 +182,25 @@ const TaskPage = () => {
       )}
 
       <h3>Ваш код:</h3>
-      <textarea
+      <Editor
+        className="code-editor"
+        height="400px"
+        defaultLanguage="javascript"
         value={userCode}
-        onChange={handleCodeChange}
-        rows="10"
-        cols="60"
-        placeholder="Введите ваш код..."
-        style={{ width: "100%", fontSize: "16px" }}
+        onChange={(value) => setUserCode(value || "")}
+        theme="vs-dark"
+        options={{
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          scrollbar: {
+            vertical: "auto", // <-- ключевая строка
+            horizontal: "auto",
+          },
+          fontSize: 16,
+          wordWrap: "on",
+          lineNumbers: "on",
+          automaticLayout: true,
+        }}
       />
 
       <button
