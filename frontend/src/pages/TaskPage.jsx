@@ -172,8 +172,8 @@ const TaskPage = () => {
 
       {task.tests.length > 0 && (
         <>
-          <h3>Примеры входных данных:</h3>
-          {task.tests.map((test, index) => (
+          <h3>Примеры входных данных (первые 3):</h3>
+          {task.tests.slice(0, 3).map((test, index) => (
             <pre key={index}>
               Вход: {test.input} → Ожидаемый выход: {test.output}
             </pre>
@@ -216,20 +216,42 @@ const TaskPage = () => {
 
       {failedTests.length > 0 && (
         <div style={{ marginTop: "20px" }}>
-          <h3>Ошибки тестов:</h3>
-          {failedTests.map((test, index) => (
-            <div key={index} style={{ marginBottom: "10px" }}>
-              <p>
-                <strong>Тест {index + 1}:</strong>
-              </p>
-              <p>Вход: {test.input}</p>
-              <p>Ожидаемый выход: {test.expected}</p>
-              <p>Получено: {test.got}</p>
-              {test.error && (
-                <p style={{ color: "red" }}>Ошибка: {test.error}</p>
-              )}
-            </div>
-          ))}
+          <h3>Ошибки в тестах:</h3>
+          {failedTests.map((failedTest) => {
+            // Найдём индекс теста в оригинальном массиве task.tests
+            const originalIndex = task.tests.findIndex(
+              (t) => t._id === failedTest._id || t._id?.$oid === failedTest._id
+            );
+
+            const isFirstThree = originalIndex < 3;
+
+            return (
+              <div
+                key={failedTest._id || Math.random()}
+                style={{ marginBottom: "10px" }}
+              >
+                {isFirstThree ? (
+                  <>
+                    <p>
+                      <strong>Тест {originalIndex + 1}:</strong>
+                    </p>
+                    <p>Вход: {failedTest.input}</p>
+                    <p>Ожидаемый выход: {failedTest.expected}</p>
+                    <p>Получено: {failedTest.got}</p>
+                    {failedTest.error && (
+                      <p style={{ color: "red" }}>Ошибка: {failedTest.error}</p>
+                    )}
+                  </>
+                ) : (
+                  <p>
+                    <p>
+                      <strong>Тест {originalIndex + 1} не пройден</strong>
+                    </p>
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

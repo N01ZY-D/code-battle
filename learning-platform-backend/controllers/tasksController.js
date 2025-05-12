@@ -91,6 +91,7 @@ const checkSolution = async (req, res) => {
         if (String(result) !== String(output)) {
           allTestsPassed = false;
           failedTests.push({
+            _id: test._id,
             input,
             expected: output,
             got: result,
@@ -100,6 +101,7 @@ const checkSolution = async (req, res) => {
       } catch (err) {
         console.error("Ошибка выполнения кода:", err);
         failedTests.push({
+          _id: test._id,
           input,
           error: `Ошибка выполнения: ${err.message}`,
         });
