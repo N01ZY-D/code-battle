@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { FiEdit, FiAlertOctagon, FiCheck } from "react-icons/fi";
 import Editor from "@monaco-editor/react";
-import "../styles/TaskPage.css";
+import "../styles/taskPage.css";
 
 const TaskPage = () => {
   const { taskId } = useParams();
