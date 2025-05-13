@@ -217,13 +217,18 @@ const TaskPage = () => {
       {failedTests.length > 0 && (
         <div style={{ marginTop: "20px" }}>
           <h3>Ошибки в тестах:</h3>
-          {failedTests.map((failedTest) => {
-            // Найдём индекс теста в оригинальном массиве task.tests
-            const originalIndex = task.tests.findIndex(
-              (t) => t._id === failedTest._id || t._id?.$oid === failedTest._id
-            );
+          {(() => {
+            // Берём только первый проваленный тест
+            const failedTest = failedTests[0];
 
-            const isFirstThree = originalIndex < 3;
+            const originalIndex = task.tests.findIndex((t) => {
+              const taskId = t._id?.$oid || t._id;
+              const failedId = failedTest._id?.$oid || failedTest._id;
+              return taskId === failedId;
+            });
+
+            const displayIndex = originalIndex >= 0 ? originalIndex : 0;
+            const isFirstThree = displayIndex < 3;
 
             return (
               <div
@@ -233,7 +238,7 @@ const TaskPage = () => {
                 {isFirstThree ? (
                   <>
                     <p>
-                      <strong>Тест {originalIndex + 1}:</strong>
+                      <strong>Тест {displayIndex + 1}:</strong>
                     </p>
                     <p>Вход: {failedTest.input}</p>
                     <p>Ожидаемый выход: {failedTest.expected}</p>
@@ -244,14 +249,12 @@ const TaskPage = () => {
                   </>
                 ) : (
                   <p>
-                    <p>
-                      <strong>Тест {originalIndex + 1} не пройден</strong>
-                    </p>
+                    <strong>Тест {displayIndex + 1} не пройден</strong>
                   </p>
                 )}
               </div>
             );
-          })}
+          })()}
         </div>
       )}
     </div>
