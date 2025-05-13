@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   solvedTasks: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Task",
-    default: undefined,
+    default: [],
   }, // массив ID решённых задач
   solutions: [
     {

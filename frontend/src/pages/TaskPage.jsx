@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiAlertOctagon, FiCheck } from "react-icons/fi";
+import Editor from "@monaco-editor/react";
+import "../styles/taskPage.css";
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -171,8 +173,8 @@ const TaskPage = () => {
 
       {task.tests.length > 0 && (
         <>
-          <h3>Примеры входных данных:</h3>
-          {task.tests.map((test, index) => (
+          <h3>Примеры входных данных (первые 3):</h3>
+          {task.tests.slice(0, 3).map((test, index) => (
             <pre key={index}>
               Вход: {test.input} → Ожидаемый выход: {test.output}
             </pre>
@@ -181,13 +183,25 @@ const TaskPage = () => {
       )}
 
       <h3>Ваш код:</h3>
-      <textarea
+      <Editor
+        className="code-editor"
+        height="400px"
+        defaultLanguage="javascript"
         value={userCode}
-        onChange={handleCodeChange}
-        rows="10"
-        cols="60"
-        placeholder="Введите ваш код..."
-        style={{ width: "100%", fontSize: "16px" }}
+        onChange={(value) => setUserCode(value || "")}
+        theme="vs-dark"
+        options={{
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          scrollbar: {
+            vertical: "auto", // <-- ключевая строка
+            horizontal: "auto",
+          },
+          fontSize: 16,
+          wordWrap: "on",
+          lineNumbers: "on",
+          automaticLayout: true,
+        }}
       />
 
       <button
@@ -197,26 +211,64 @@ const TaskPage = () => {
         Проверить код
       </button>
 
-      {result && (
-        <p style={{ marginTop: "10px", fontWeight: "bold" }}>{result}</p>
+      {result === "Правильный код!" && (
+        <div className="test-success-box">
+          <FiCheck className="test-success-icon" />
+          {result}
+        </div>
       )}
 
       {failedTests.length > 0 && (
         <div style={{ marginTop: "20px" }}>
-          <h3>Ошибки тестов:</h3>
-          {failedTests.map((test, index) => (
-            <div key={index} style={{ marginBottom: "10px" }}>
-              <p>
-                <strong>Тест {index + 1}:</strong>
-              </p>
-              <p>Вход: {test.input}</p>
-              <p>Ожидаемый выход: {test.expected}</p>
-              <p>Получено: {test.got}</p>
-              {test.error && (
-                <p style={{ color: "red" }}>Ошибка: {test.error}</p>
-              )}
-            </div>
-          ))}
+          <h3>Ошибки в тестах:</h3>
+          {(() => {
+            // Берём только первый проваленный тест
+            const failedTest = failedTests[0];
+
+            const originalIndex = task.tests.findIndex((t) => {
+              const taskId = t._id?.$oid || t._id;
+              const failedId = failedTest._id?.$oid || failedTest._id;
+              return taskId === failedId;
+            });
+
+            const displayIndex = originalIndex >= 0 ? originalIndex : 0;
+            const isFirstThree = displayIndex < 3;
+
+            return (
+              <div
+                className="test-error-box"
+                key={failedTest._id || Math.random()}
+              >
+                <p className="test-error-title">
+                  <FiAlertOctagon size={25} /> Ошибка в тесте {displayIndex + 1}
+                </p>
+
+                {isFirstThree ? (
+                  <>
+                    <p className="test-error-entry">
+                      <strong>Вход:</strong> <code>{failedTest.input}</code>
+                    </p>
+                    <p className="test-error-entry">
+                      <strong>Ожидаемый результат:</strong>{" "}
+                      <code>{failedTest.expected}</code>
+                    </p>
+                    <p className="test-error-entry">
+                      <strong>Получено:</strong> <code>{failedTest.got}</code>
+                    </p>
+                    {failedTest.error && (
+                      <p className="test-error-entry">
+                        <strong>Ошибка от сервера:</strong> {failedTest.error}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="test-error-entry">
+                    Тест {displayIndex + 1} не пройден.
+                  </p>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>
