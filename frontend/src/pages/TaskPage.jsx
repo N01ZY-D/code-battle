@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiAlertOctagon, FiCheck } from "react-icons/fi";
 import Editor from "@monaco-editor/react";
+import "../styles/TaskPage.css";
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -210,8 +211,11 @@ const TaskPage = () => {
         Проверить код
       </button>
 
-      {result && (
-        <p style={{ marginTop: "10px", fontWeight: "bold" }}>{result}</p>
+      {result === "Правильный код!" && (
+        <div className="test-success-box">
+          <FiCheck className="test-success-icon" />
+          {result}
+        </div>
       )}
 
       {failedTests.length > 0 && (
@@ -232,24 +236,34 @@ const TaskPage = () => {
 
             return (
               <div
+                className="test-error-box"
                 key={failedTest._id || Math.random()}
-                style={{ marginBottom: "10px" }}
               >
+                <p className="test-error-title">
+                  <FiAlertOctagon size={25} /> Ошибка в тесте {displayIndex + 1}
+                </p>
+
                 {isFirstThree ? (
                   <>
-                    <p>
-                      <strong>Тест {displayIndex + 1}:</strong>
+                    <p className="test-error-entry">
+                      <strong>Вход:</strong> <code>{failedTest.input}</code>
                     </p>
-                    <p>Вход: {failedTest.input}</p>
-                    <p>Ожидаемый выход: {failedTest.expected}</p>
-                    <p>Получено: {failedTest.got}</p>
+                    <p className="test-error-entry">
+                      <strong>Ожидаемый результат:</strong>{" "}
+                      <code>{failedTest.expected}</code>
+                    </p>
+                    <p className="test-error-entry">
+                      <strong>Получено:</strong> <code>{failedTest.got}</code>
+                    </p>
                     {failedTest.error && (
-                      <p style={{ color: "red" }}>Ошибка: {failedTest.error}</p>
+                      <p className="test-error-entry">
+                        <strong>Ошибка от сервера:</strong> {failedTest.error}
+                      </p>
                     )}
                   </>
                 ) : (
-                  <p>
-                    <strong>Тест {displayIndex + 1} не пройден</strong>
+                  <p className="test-error-entry">
+                    Тест {displayIndex + 1} не пройден.
                   </p>
                 )}
               </div>
