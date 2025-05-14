@@ -1,38 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/tasksPage.css"; // Импортируем стили для страницы заданий
 import { FiArrowUp, FiArrowDown, FiEdit, FiTrash2 } from "react-icons/fi";
+import AuthContext from "../context/AuthContext";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
-  const [user, setUser] = useState(null);
+  const { user, token } = useContext(AuthContext); // Получаем данные из контекста
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки данных пользователя:", error);
-      }
-    };
-
     const fetchTasks = async () => {
-      const token = localStorage.getItem("token");
       if (!token) {
         console.log("Токен отсутствует");
         return;
@@ -54,9 +33,8 @@ const TasksPage = () => {
       }
     };
 
-    fetchUser();
     fetchTasks();
-  }, []);
+  }, [token]);
 
   const handleMoveTask = async (taskId, direction) => {
     const newTasks = [...tasks];
@@ -88,7 +66,7 @@ const TasksPage = () => {
         { tasks: reorderedTasks }, // отправляем задачи с _id и order
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -108,7 +86,7 @@ const TasksPage = () => {
         `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks/${taskId}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
