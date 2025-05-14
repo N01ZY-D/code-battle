@@ -1,51 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { FiEdit, FiAlertOctagon, FiCheck } from "react-icons/fi";
 import Editor from "@monaco-editor/react";
+import AuthContext from "../context/AuthContext"; // Импортируем AuthContext
 import "../styles/taskPage.css";
 
 const TaskPage = () => {
   const { taskId } = useParams();
+  const { user, token } = useContext(AuthContext); // Используем данные из контекста
   const [task, setTask] = useState(null);
   const [userCode, setUserCode] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [failedTests, setFailedTests] = useState([]);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.log("Токен отсутствует");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          console.error(
-            "Ошибка при загрузке данных пользователя:",
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Ошибка при загрузке данных пользователя:", error);
-      }
-    };
     const fetchTask = async () => {
       try {
         const response = await axios.get(
@@ -54,7 +25,7 @@ const TaskPage = () => {
           }/api/tasks/${taskId}`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -74,9 +45,8 @@ const TaskPage = () => {
       }
     };
 
-    fetchUser();
     if (taskId) fetchTask();
-  }, [taskId]);
+  }, [taskId, token]);
 
   const handleCodeChange = (e) => {
     setUserCode(e.target.value);
@@ -105,7 +75,7 @@ const TaskPage = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
