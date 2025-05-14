@@ -1,6 +1,29 @@
 const Theory = require("../models/Theory");
 const User = require("../models/User");
 
+const getAllTheories = async (req, res) => {
+  try {
+    const theories = await Theory.find().sort({ order: 1 }); // Извлечение всех теорий из базы
+    res.json(theories); // Отправляем список всех теорий
+  } catch (err) {
+    console.error("Ошибка при получении теорий:", err);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+const getTheory = async (req, res) => {
+  try {
+    const theory = await Theory.findOne({ slug: req.params.slug });
+    if (!theory) {
+      return res.status(404).json({ message: "Тема не найдена" });
+    }
+    res.json(theory); // Отправляем теорию
+  } catch (err) {
+    console.error("Ошибка при получении теории:", err);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 const createTheory = async (req, res) => {
   try {
     const user = await User.findById(req.user);
@@ -33,20 +56,22 @@ const createTheory = async (req, res) => {
 
 const updateTheory = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({ message: "Доступ запрещен" });
+    // Используйте slug для поиска
+    const theory = await Theory.findOne({ slug: req.params.slug });
+
+    if (!theory) {
+      return res.status(404).json({ message: "Теория не найдена" });
     }
 
-    const { theoryId } = req.params;
-    const updates = req.body;
+    // Обновляем данные теории
+    theory.title = req.body.title;
+    theory.markdownContent = req.body.markdownContent;
+    theory.category = req.body.category;
 
-    const updatedTheory = await Theory.findByIdAndUpdate(theoryId, updates, {
-      new: true,
-    });
-
-    res.json({ message: "Теория обновлена", theory: updatedTheory });
-  } catch (error) {
+    await theory.save(); // Сохраняем изменения
+    res.json(theory); // Отправляем обновленную теорию
+  } catch (err) {
+    console.error("Ошибка при обновлении теории:", err);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
@@ -96,6 +121,11 @@ const deleteTheory = async (req, res) => {
   }
 };
 
-module.exports = { createTheory, updateTheory, reorderTheories, deleteTheory };
-
-module.exports = { createTheory, updateTheory, reorderTheories, deleteTheory };
+module.exports = {
+  getAllTheories,
+  getTheory,
+  createTheory,
+  updateTheory,
+  reorderTheories,
+  deleteTheory,
+};

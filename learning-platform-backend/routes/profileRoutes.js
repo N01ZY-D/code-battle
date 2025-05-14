@@ -4,7 +4,6 @@ const {
   getProfile,
   updateProfile,
 } = require("../controllers/profileController");
-const User = require("../models/User");
 
 const router = express.Router();
 
