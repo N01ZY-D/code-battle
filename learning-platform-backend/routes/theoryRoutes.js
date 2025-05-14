@@ -1,7 +1,4 @@
-// В файле routes/theoryRoutes.js
 const express = require("express");
-const User = require("../models/User");
-const Theory = require("../models/Theory");
 const authMiddleware = require("../middleware/authMiddleware");
 const {
   getAllTheories,
