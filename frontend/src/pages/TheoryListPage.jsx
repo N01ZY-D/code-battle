@@ -1,48 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/theoryListPage.css";
 import { FiArrowUp, FiArrowDown, FiEdit, FiTrash2 } from "react-icons/fi";
+import AuthContext from "../context/AuthContext";
 
 const TheoryListPage = () => {
   const [theories, setTheories] = useState([]);
-  const [user, setUser] = useState(null);
+  const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.log("Токен отсутствует");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          console.error(
-            "Ошибка при загрузке данных пользователя:",
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Ошибка при загрузке данных пользователя:", error);
-      }
-    };
-
     const fetchTheories = async () => {
-      const token = localStorage.getItem("token");
       if (!token) {
         console.log("Токен отсутствует");
         return;
@@ -69,7 +38,6 @@ const TheoryListPage = () => {
       }
     };
 
-    fetchUser();
     fetchTheories();
   }, []);
 
