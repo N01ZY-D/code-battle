@@ -3,6 +3,7 @@ const User = require("../models/User");
 
 const router = express.Router();
 
+// Получение топ-10 пользователей по количеству решённых задач
 router.get("/", async (req, res) => {
   try {
     const leaderboard = await User.find()

@@ -5,13 +5,16 @@ const {
   loginUser,
   getUserData,
 } = require("../controllers/authController");
-const User = require("../models/User"); // Убедись, что модель импортирована
 
 const router = express.Router();
 
-router.post("/register", registerUser); // <-- Тут важен `POST`
+// Регистрация нового пользователя
+router.post("/register", registerUser);
+
+// Логин пользователя
 router.post("/login", loginUser);
 
+// Получение данных текущего пользователя
 router.get("/me", authMiddleware, getUserData); // Защищенный маршрут
 
 module.exports = router;
