@@ -103,7 +103,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   };
 
   if (isLoading) return <p>Загрузка...</p>;
-  if (!user || user.role !== "admin") return navigate("/");
+  if (!user || user.role !== "admin") return navigate("/dashboard");
 
   return (
     <div className="create-task-page">

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext"; // Убедись в корректном пути
+import MarkdownEditorPreview from "../components/MarkdownEditorPreview";
 import "../styles/createTheoryPage.css";
-import MarkdownEditorPreview from "../components/MarkdownEditorPreview"; // путь подстрой под свою структуру
 
 const CreateTheoryPage = ({ slug, initialData }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, token } = useContext(AuthContext); // Используем контекст
   const [theoryData, setTheoryData] = useState({
     title: "",
     slug: "",
@@ -13,34 +14,14 @@ const CreateTheoryPage = ({ slug, initialData }) => {
     markdownContent: "",
   });
 
-  // Получаем информацию о пользователе и проверяем роль администратора
+  // Перенаправление, если не админ
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+    if (user && user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-          if (data.role !== "admin") navigate("/dashboard"); // Перенаправляем не-администраторов
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки пользователя:", error);
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
-
-  // Если переданы данные для редактирования, заполняем их в состояние
+  // Заполнение формы при редактировании
   useEffect(() => {
     if (slug && initialData) {
       setTheoryData({
@@ -49,6 +30,7 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         category: initialData.category,
         markdownContent: initialData.markdownContent,
       });
+
       setTimeout(() => {
         const textareas = document.querySelectorAll("textarea");
         textareas.forEach((textarea) => {
@@ -57,34 +39,20 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         });
       }, 100);
     }
-  }, [slug, initialData]); // Заполняем форму, если получены данные для редактирования
+  }, [slug, initialData]);
 
-  // Обработчик изменений
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTheoryData({ ...theoryData, [name]: value });
   };
 
-  // Обработчик изменений высоты текстового поля
-  const handleTextareaInput = (e) => {
-    e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight + 2}px`;
-  };
-
-  // Обработчик отправки формы
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Логируем отправляемые данные
-    console.log("Отправляемые данные:", theoryData);
-
-    const token = localStorage.getItem("token");
-    const method = slug ? "PUT" : "POST"; // PUT для редактирования, POST для создания
+    const method = slug ? "PUT" : "POST";
     const url = slug
       ? `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory/${slug}`
       : `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory/create`;
-
-    console.log("URL запроса:", url); // Логируем URL, куда отправляется запрос
 
     try {
       const response = await fetch(url, {
@@ -96,16 +64,11 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         body: JSON.stringify(theoryData),
       });
 
-      // Логируем статус ответа
-      console.log("Ответ от сервера:", response);
-
       if (response.ok) {
         alert("Теория успешно " + (slug ? "обновлена" : "создана"));
         navigate("/theory");
       } else {
         const errorData = await response.json();
-        // Логируем ошибку, если запрос не прошел
-        console.log("Ошибка от сервера:", errorData);
         alert(`Ошибка: ${errorData.message}`);
       }
     } catch (error) {
@@ -145,7 +108,7 @@ const CreateTheoryPage = ({ slug, initialData }) => {
             value={theoryData.slug}
             onChange={handleChange}
             required
-            disabled={slug !== undefined} // Slug отключён в режиме редактирования
+            disabled={!!slug}
           />
         </div>
         <div className="form-group">
@@ -170,14 +133,13 @@ const CreateTheoryPage = ({ slug, initialData }) => {
             placeholder="Напишите содержание в формате Markdown..."
           />
         </div>
-
         <div className="buttons">
           <button type="submit" className="submit-button">
             {slug ? "Обновить теорию" : "Создать теорию"}
           </button>
           {slug && (
             <Link to="/theory">
-              <button>Назад к списку теорий</button>
+              <button type="button">Назад к списку теорий</button>
             </Link>
           )}
         </div>
