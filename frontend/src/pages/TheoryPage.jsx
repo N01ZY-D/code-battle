@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -6,43 +6,14 @@ import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom"; // Импортируем Link для навигации
 import "../styles/theoryPage.css"; // Импортируем стили для страницы теории
 import { FiEdit } from "react-icons/fi";
+import AuthContext from "../context/AuthContext";
 
 const TheoryPage = () => {
   const { slug } = useParams(); // Получаем slug из URL
   const [theory, setTheory] = useState(null); // Состояние для хранения теории
-  const [user, setUser] = useState(null);
+  const { user, token } = useContext(AuthContext); // Получаем данные пользователя из контекста
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.log("Токен отсутствует");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          console.error(
-            "Ошибка при загрузке данных пользователя:",
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Ошибка при загрузке данных пользователя:", error);
-      }
-    };
     const fetchTheory = async () => {
       try {
         // Запрос на получение теории по slug
@@ -62,7 +33,6 @@ const TheoryPage = () => {
       }
     };
 
-    fetchUser(); // Загружаем данные пользователя
     if (slug) fetchTheory(); // Загружаем теорию, если есть slug
   }, [slug]); // Эффект сработает при изменении slug
 

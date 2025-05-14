@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 import "../styles/createTaskPage.css";
-import MarkdownEditorPreview from "../components/MarkdownEditorPreview"; // путь подстрой под свою структуру
+import MarkdownEditorPreview from "../components/MarkdownEditorPreview";
 
 const CreateTaskPage = ({ mode = "create", initialData = null }) => {
+  const { user, token, isLoading } = useContext(AuthContext);
   const navigate = useNavigate();
   const { taskId } = useParams();
-  const [user, setUser] = useState(null);
+
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
@@ -19,38 +21,10 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   });
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-          if (data.role !== "admin") navigate("/");
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки пользователя:", error);
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
-
-  useEffect(() => {
     if (initialData) {
       setTaskData(initialData);
-
       setTimeout(() => {
-        const textareas = document.querySelectorAll("textarea");
-        textareas.forEach((textarea) => {
+        document.querySelectorAll("textarea").forEach((textarea) => {
           textarea.style.height = "auto";
           textarea.style.height = `${textarea.scrollHeight + 2}px`;
         });
@@ -65,7 +39,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTaskData({ ...taskData, [name]: value });
+    setTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTestChange = (index, e) => {
@@ -76,21 +50,21 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   };
 
   const addTest = () => {
-    setTaskData({
-      ...taskData,
-      tests: [...taskData.tests, { input: "", output: "" }],
-    });
+    setTaskData((prev) => ({
+      ...prev,
+      tests: [...prev.tests, { input: "", output: "" }],
+    }));
   };
 
   const removeTest = (index) => {
     if (taskData.tests.length <= 1) return;
     const updatedTests = taskData.tests.filter((_, i) => i !== index);
-    setTaskData({ ...taskData, tests: updatedTests });
+    setTaskData((prev) => ({ ...prev, tests: updatedTests }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
+    if (!token) return alert("Нет токена, авторизуйтесь заново.");
 
     try {
       const url =
@@ -114,11 +88,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
       });
 
       if (response.ok) {
-        alert(
-          mode === "edit"
-            ? "Задача успешно обновлена!"
-            : "Задача успешно создана!"
-        );
+        alert(mode === "edit" ? "Задача обновлена!" : "Задача создана!");
         navigate("/tasks");
       } else {
         const errorData = await response.json();
@@ -132,9 +102,8 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
     }
   };
 
-  if (!user || user.role !== "admin") {
-    return <p>Загрузка...</p>;
-  }
+  if (isLoading) return <p>Загрузка...</p>;
+  if (!user || user.role !== "admin") return navigate("/dashboard");
 
   return (
     <div className="create-task-page">
@@ -142,7 +111,6 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
         {mode === "edit" ? "Редактирование задачи" : "Создание новой задачи"}
       </h2>
       <form className="task-form" onSubmit={handleSubmit}>
-        {/* Инпуты формы остаются без изменений */}
         <div className="form-group">
           <label htmlFor="title">Название</label>
           <input
@@ -196,7 +164,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
           <MarkdownEditorPreview
             value={taskData.markdownContent}
             onChange={(val) =>
-              setTaskData({ ...taskData, markdownContent: val })
+              setTaskData((prev) => ({ ...prev, markdownContent: val }))
             }
             placeholder="Markdown описание"
           />

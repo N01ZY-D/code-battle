@@ -1,44 +1,82 @@
+// AuthContext.jsx
 import { createContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; // Если не установлен, установите пакет: npm install jwt-decode
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Проверка наличия токена при старте приложения
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem("token");
+
+      if (!storedToken) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const decoded = jwtDecode(storedToken);
         if (decoded.exp * 1000 > Date.now()) {
           setToken(storedToken);
+          // Загружаем данные пользователя
+          const response = await axios.get(
+            `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${storedToken}`,
+              },
+            }
+          );
+          setUser(response.data); // email, role и т.п.
         } else {
           localStorage.removeItem("token");
         }
       } catch (err) {
-        console.error("Token decoding error:", err);
+        console.error("Ошибка авторизации:", err);
         localStorage.removeItem("token");
       }
-    }
-    setIsLoading(false);
+
+      setIsLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  // Логика для логина и логаута
-  const login = (newToken) => {
+  const login = async (newToken) => {
     setToken(newToken);
-    localStorage.setItem("token", newToken); // Сохраняем токен в localStorage
+    localStorage.setItem("token", newToken);
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+          },
+        }
+      );
+      setUser(response.data);
+    } catch (err) {
+      console.error("Ошибка при получении данных пользователя:", err);
+    }
   };
+
   const logout = () => {
     setToken(null);
-    localStorage.removeItem("token"); // Удаляем токен при логауте
+    setUser(null);
+    localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isLoading }}>
-      {!isLoading && children} {/* Показываем контент только после загрузки */}
+    <AuthContext.Provider
+      value={{ token, user, setUser, login, logout, isLoading }}
+    >
+      {!isLoading && children}
     </AuthContext.Provider>
   );
 };
