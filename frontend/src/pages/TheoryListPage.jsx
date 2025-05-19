@@ -4,42 +4,43 @@ import { useNavigate, Link } from "react-router-dom";
 import "../styles/theoryListPage.css";
 import { FiArrowUp, FiArrowDown, FiEdit, FiTrash2 } from "react-icons/fi";
 import AuthContext from "../context/AuthContext";
+import ContentContext from "../context/ContentContext";
 
 const TheoryListPage = () => {
-  const [theories, setTheories] = useState([]);
-  const { user, token } = useContext(AuthContext);
+  const { theories, setTheories } = useContext(ContentContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTheories = async () => {
-      if (!token) {
-        console.log("Токен отсутствует");
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchTheories = async () => {
+  //     if (!token) {
+  //       console.log("Токен отсутствует");
+  //       return;
+  //     }
 
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  //     try {
+  //       const response = await fetch(
+  //         `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/theory`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
 
-        if (response.ok) {
-          const data = await response.json();
-          setTheories(data);
-        } else {
-          console.error("Ошибка при загрузке теорий:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Ошибка при загрузке теорий:", error);
-      }
-    };
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setTheories(data);
+  //       } else {
+  //         console.error("Ошибка при загрузке теорий:", response.statusText);
+  //       }
+  //     } catch (error) {
+  //       console.error("Ошибка при загрузке теорий:", error);
+  //     }
+  //   };
 
-    fetchTheories();
-  }, []);
+  //   fetchTheories();
+  // }, []);
 
   const handleTheoryClick = (slug) => {
     navigate(`/theory/${slug}`);
