@@ -132,11 +132,15 @@ const TheoryListPage = () => {
     ...allCategories.filter((c) => !categoryOrder.includes(c)),
   ];
 
+  const nonEmptyCategories = sortedCategories.filter(
+    (category) => grouped[category] && grouped[category].length > 0
+  );
+
   return (
     <div className="theory-list-page">
       <h1 className="theory-list-page__title">Выберите раздел теории</h1>
       <div className="theory-list-page__content">
-        {sortedCategories.map((category, index) => (
+        {nonEmptyCategories.map((category, index) => (
           <div key={category} className="theory-list-page__category">
             <div className="theory-list-page__category-header">
               <h2 className="theory-list-page__category-title">{category}</h2>
@@ -153,7 +157,7 @@ const TheoryListPage = () => {
                   <button
                     className="theory-list-page__move-button"
                     onClick={() => handleMoveCategory(index, "down")}
-                    disabled={index === sortedCategories.length - 1}
+                    disabled={index === nonEmptyCategories.length - 1}
                   >
                     <FiArrowDown size={18} />
                   </button>
