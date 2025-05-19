@@ -4,37 +4,38 @@ import { useNavigate, Link } from "react-router-dom";
 import "../styles/tasksPage.css"; // Импортируем стили для страницы заданий
 import { FiArrowUp, FiArrowDown, FiEdit, FiTrash2 } from "react-icons/fi";
 import AuthContext from "../context/AuthContext";
+import ContentContext from "../context/ContentContext";
 
 const TasksPage = () => {
-  const [tasks, setTasks] = useState([]);
+  const { tasks, setTasks } = useContext(ContentContext);
   const { user, token } = useContext(AuthContext); // Получаем данные из контекста
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (!token) {
-        console.log("Токен отсутствует");
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchTasks = async () => {
+  //     if (!token) {
+  //       console.log("Токен отсутствует");
+  //       return;
+  //     }
 
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Задания успешно загружены:", response.data);
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Ошибка при загрузке заданий:", error);
-      }
-    };
+  //     try {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/tasks`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       console.log("Задания успешно загружены:", response.data);
+  //       setTasks(response.data);
+  //     } catch (error) {
+  //       console.error("Ошибка при загрузке заданий:", error);
+  //     }
+  //   };
 
-    fetchTasks();
-  }, [token]);
+  //   fetchTasks();
+  // }, [token]);
 
   const handleMoveTask = async (taskId, direction) => {
     const newTasks = [...tasks];
