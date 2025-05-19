@@ -20,6 +20,20 @@
   padding: 20px;
 }
 
+.theory-list-page__category-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 10px 0;
+}
+
+.theory-list-page__category-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 12px 0;
+  text-align: center;
+}
+
 .theory-list-page__links,
 .tasks-page__list {
   display: flex;
