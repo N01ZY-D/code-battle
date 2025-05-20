@@ -69,3 +69,33 @@ textarea {
 .submit-button:hover {
   background-color: #45a049;
 }
+
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #323844;
+  border: 1px solid #3f4552;
+  border-radius: 8px;
+  color: white;
+  appearance: none; /* убирает стандартный стиль */
+  cursor: pointer;
+  background-size: 10px 6px;
+  transition: border-color 0.3s;
+}
+
+.form-group select:focus {
+  border-color: #646cff;
+  outline: none;
+  background-color: #3b4150;
+}
+
+.form-group option {
+  background-color: #2c2f36;
+  color: white;
+}
+
+/* Чтобы disabled option выглядела иначе */
+.form-group option:disabled {
+  color: #777;
+}

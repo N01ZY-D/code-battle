@@ -1,18 +1,41 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import AuthContext from "../context/AuthContext"; // Убедись в корректном пути
+import AuthContext from "../context/AuthContext";
 import MarkdownEditorPreview from "../components/MarkdownEditorPreview";
 import "../styles/createTheoryPage.css";
 
 const CreateTheoryPage = ({ slug, initialData }) => {
   const navigate = useNavigate();
-  const { user, token } = useContext(AuthContext); // Используем контекст
+  const { user, token } = useContext(AuthContext);
+
   const [theoryData, setTheoryData] = useState({
     title: "",
     slug: "",
     category: "",
     markdownContent: "",
   });
+
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  // Получение категорий из settings
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/category-order`
+        );
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        console.error("Ошибка при загрузке категорий:", err);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Перенаправление, если не админ
   useEffect(() => {
@@ -113,15 +136,26 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         </div>
         <div className="form-group">
           <label htmlFor="category">Категория</label>
-          <input
-            id="category"
-            type="text"
-            name="category"
-            placeholder="Категория"
-            value={theoryData.category}
-            onChange={handleChange}
-            required
-          />
+          {loadingCategories ? (
+            <p>Загрузка категорий...</p>
+          ) : (
+            <select
+              id="category"
+              name="category"
+              value={theoryData.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Выберите категорию
+              </option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="form-group">
           <label htmlFor="markdownContent">Markdown описание</label>
