@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import axios from "axios";
-import "../styles/profilePage.css"; // Импортируем стили для страницы профиля
+import "../styles/profilePage.css";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [newNickname, setNewNickname] = useState("");
   const [newAvatar, setNewAvatar] = useState("");
+  const [expandedTasks, setExpandedTasks] = useState({}); // хранит состояния открытых блоков
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -51,11 +52,32 @@ const ProfilePage = () => {
     }
   };
 
+  // Группировка решений по задаче
+  const groupSolutionsByTask = (solutions) => {
+    const grouped = {};
+    solutions.forEach((sol) => {
+      const taskId = sol.taskId._id;
+      if (!grouped[taskId]) {
+        grouped[taskId] = {
+          taskTitle: sol.taskId.title,
+          solutions: [],
+        };
+      }
+      grouped[taskId].solutions.push(sol);
+    });
+    return grouped;
+  };
+
+  const toggleExpand = (taskId) => {
+    setExpandedTasks((prev) => ({
+      ...prev,
+      [taskId]: !prev[taskId],
+    }));
+  };
+
   if (loading) return <div>Загрузка...</div>;
 
-  console.log("ProfilePage received user:", user);
-  console.log("Avatar matrix:", user?.avatarMatrix);
-  console.log("Avatar color:", user?.avatarColor);
+  const groupedSolutions = groupSolutionsByTask(user.solutions);
 
   return (
     <div className="profile-container">
@@ -95,18 +117,32 @@ const ProfilePage = () => {
           Решения задач (уникальных задач решено: {user.solvedTasksCount})
         </h3>
         {user?.solutions?.length > 0 ? (
-          <div className="solutions-grid">
-            {user.solutions.map((solution) => (
-              <div key={solution._id} className="solution-card">
-                <Link
-                  to={`/tasks/${solution.taskId._id}`}
-                  className="solution-title"
+          <div className="solutions-accordion">
+            {Object.entries(groupedSolutions).map(([taskId, taskData]) => (
+              <div key={taskId} className="accordion-task-block">
+                <div
+                  className="accordion-task-title"
+                  onClick={() => toggleExpand(taskId)}
                 >
-                  {solution.taskId.title}
-                </Link>
-                <pre className="solution-code">
-                  <code>{solution.code}</code>
-                </pre>
+                  {expandedTasks[taskId] ? "▾" : "▸"}{" "}
+                  <Link to={`/tasks/${taskId}`} className="solution-title">
+                    {taskData.taskTitle}
+                  </Link>
+                </div>
+                {expandedTasks[taskId] && (
+                  <div className="accordion-solutions-list">
+                    {taskData.solutions.map((sol) => (
+                      <div key={sol._id} className="solution-card">
+                        <p className="solution-date">
+                          {new Date(sol.createdAt).toLocaleString("ru-RU")}
+                        </p>
+                        <pre className="solution-code">
+                          <code>{sol.code}</code>
+                        </pre>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

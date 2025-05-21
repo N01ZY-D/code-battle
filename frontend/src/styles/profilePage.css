@@ -147,7 +147,8 @@
 
 .solution-card {
   background-color: #2c2f36;
-  padding: 20px;
+  margin: 10px 0;
+  padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s, box-shadow 0.2s;
@@ -172,13 +173,45 @@
 
 .solution-code {
   background-color: #344756;
-  margin-top: 10px;
-  padding: 14px; /* чуть больше паддинг */
+  margin: 10px 0 0;
   border-radius: 8px;
-  overflow-x: auto;
   width: 100%; /* код растягивается на всю ширину карточки */
   white-space: pre-wrap; /* перенос строк */
   word-break: break-word; /* перенос длинных слов */
-  color: #d1d5db;
   font-size: 14px;
+  padding: 0.5rem;
+  overflow-x: auto;
+  font-family: monospace;
+}
+
+.solutions-accordion {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.accordion-task-block {
+  width: 100%;
+  align-self: stretch;
+  background-color: #344756;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+
+.accordion-task-title {
+  display: block;
+  margin-bottom: 0px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 0px;
+}
+
+.solution-date {
+  font-size: 0.85rem;
+  color: #bebebe;
+  margin: 0;
 }
