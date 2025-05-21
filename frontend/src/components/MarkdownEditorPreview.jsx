@@ -15,9 +15,18 @@ const MarkdownEditorPreview = ({
   const handleTextareaInput = () => {
     const textarea = textareaRef.current;
     if (textarea) {
+      const scrollTopBefore = window.pageYOffset; // сохраняем позицию прокрутки
+      const cursorPosition = textarea.selectionStart;
+
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight + 2}px`;
-      savedHeight.current = textarea.style.height; // сохраняем текущую высоту
+      savedHeight.current = textarea.style.height;
+
+      // возвращаем прокрутку обратно
+      window.scrollTo({ top: scrollTopBefore });
+
+      // сохраняем позицию курсора
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
     }
   };
 

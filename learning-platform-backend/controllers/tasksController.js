@@ -37,15 +37,15 @@ const checkSolution = async (req, res) => {
       return res.status(404).json({ error: "Задание не найдено" });
     }
 
+    // Находим пользователя
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "Пользователь не найден" });
     }
 
-    // Проверяем, решал ли пользователь уже эту задачу
     const hasSolvedTaskBefore = user.solvedTasks.includes(taskId);
 
-    // Регулярное выражение для поиска имени функции
+    // Извлекаем имя функции
     const functionNameMatch = code.match(
       /(?:function|const|let|var)\s+(\w+)\s*=?\s*\(?/
     );
@@ -63,8 +63,11 @@ const checkSolution = async (req, res) => {
 
     for (const test of task.tests) {
       const { input, output } = test;
-      const inputArgs = input.split(" ").map(Number);
-      console.log(`Тест: Вход: ${input} → Ожидаемый выход: ${output}`);
+
+      // Поддержка строковых аргументов (одно значение)
+      const inputArgs = [input];
+
+      console.log(`Тест: Вход: ${input} → Ожидаемый выход: "${output}"`);
 
       const vm = new VM({
         timeout: 1000,
@@ -72,30 +75,35 @@ const checkSolution = async (req, res) => {
       });
 
       try {
-        // Исполняемый код: объявляем переменную с функцией, затем вызываем её
-        const userFunction = `
+        const userFunctionCode = `
           ${code}
           globalThis.${functionName} = ${functionName};
         `;
 
-        // Выполняем код в изолированной среде
-        vm.run(userFunction);
+        // Загружаем функцию
+        vm.run(userFunctionCode);
 
-        // Вызываем функцию и получаем результат
+        // Вызываем её
         const result = vm.run(
           `${functionName}(...${JSON.stringify(inputArgs)})`
         );
 
-        console.log("Результат выполнения:", result);
+        // Нормализуем результат и ожидаемый вывод
+        const normalizedExpected =
+          output === undefined || output === null ? "" : String(output).trim();
+        const normalizedResult =
+          result === undefined || result === null ? "" : String(result).trim();
 
-        if (String(result) !== String(output)) {
+        console.log("Результат выполнения:", normalizedResult);
+
+        if (normalizedResult !== normalizedExpected) {
           allTestsPassed = false;
           failedTests.push({
             _id: test._id,
             input,
-            expected: output,
-            got: result,
-            error: `Ожидался результат: ${output}, но получено: ${result}`,
+            expected: normalizedExpected,
+            got: normalizedResult,
+            error: `Ожидался результат: "${normalizedExpected}", но получено: "${normalizedResult}"`,
           });
         }
       } catch (err) {
@@ -110,25 +118,25 @@ const checkSolution = async (req, res) => {
     }
 
     if (allTestsPassed) {
+      // Если задача уже была решена, просто добавим новую версию решения
       if (hasSolvedTaskBefore) {
         user.solutions.push({
-          taskId: taskId,
-          code: code,
+          taskId,
+          code,
           createdAt: new Date(),
         });
         await user.save();
-
         return res.json({ success: true, message: "Правильный код!" });
       }
 
+      // Первая успешная попытка
       user.solvedTasks.push(taskId);
       user.solvedTasksCount += 1;
       user.solutions.push({
-        taskId: taskId,
-        code: code,
+        taskId,
+        code,
         createdAt: new Date(),
       });
-
       await user.save();
 
       return res.json({ success: true, message: "Правильный код!" });
