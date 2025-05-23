@@ -1,16 +1,18 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef, use } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import Avatar from "../components/Avatar";
+import "./taskForum.css"; // импорт стилей
 
 const TaskForum = ({ taskId }) => {
   const [comments, setComments] = useState([]);
-  const [type, setType] = useState("public"); // "public" | "solution"
+  const [type, setType] = useState("public");
   const [newComment, setNewComment] = useState("");
   const [userSolutions, setUserSolutions] = useState([]);
   const [selectedSolutionId, setSelectedSolutionId] = useState(null);
   const [selectedSolutionCode, setSelectedSolutionCode] = useState("");
   const { token, user } = useContext(AuthContext);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -25,37 +27,43 @@ const TaskForum = ({ taskId }) => {
         console.error("Ошибка при загрузке комментариев:", error);
       }
     };
-
     fetchComments();
   }, [taskId]);
 
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // Сначала сбрасываем, чтобы пересчитать
+      textarea.style.height = `${textarea.scrollHeight + 3}px`; // Устанавливаем нужную высоту
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [newComment]);
+
   useEffect(() => {
     const fetchUserSolutions = async () => {
-      if (user && taskId && type === "solution") {
+      if (user && taskId) {
         try {
           const res = await axios.get(
             `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-
-          // Получаем решения пользователя
           const allSolutions = res.data.solutions || [];
-
-          // Фильтруем решения только по текущей задаче
           const relevantSolutions = allSolutions.filter(
-            (sol) => sol.taskId && sol.taskId._id === taskId
+            (sol) =>
+              sol.taskId && sol.taskId._id?.toString() === taskId.toString()
           );
-
           setUserSolutions(relevantSolutions);
         } catch (err) {
           console.error("Ошибка при загрузке решений пользователя:", err);
-          setUserSolutions([]); // На всякий случай — очистка при ошибке
+          setUserSolutions([]);
         }
       }
     };
-
     fetchUserSolutions();
-  }, [user, taskId, type, token]);
+  }, [user, taskId, token]);
 
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
@@ -87,38 +95,40 @@ const TaskForum = ({ taskId }) => {
   };
 
   const filteredComments = comments.filter((c) => c.type === type);
+  let isDisabled = userSolutions.length === 0;
+  console.log("isDisabled", isDisabled);
 
   return (
-    <div className="mt-6">
-      <div className="flex gap-4 mb-4">
+    <div className="forum-container">
+      <div className="forum-tabs">
         <button
-          className={type === "public" ? "font-bold underline" : ""}
+          className={`forum-tab ${type === "public" ? "active" : ""}`}
           onClick={() => setType("public")}
         >
           Обсуждение задачи
         </button>
         <button
-          className={type === "solution" ? "font-bold underline" : ""}
+          className={`forum-tab ${type === "solution" ? "active" : ""}`}
           onClick={() => setType("solution")}
+          disabled={isDisabled}
         >
           Обсуждение решений
         </button>
       </div>
 
       {token && (
-        <div className="mb-4">
+        <div className="forum-form">
           {type === "solution" && (
-            <div className="mb-2">
-              <label className="block text-sm font-medium mb-1">
+            <div className="solution-select">
+              <label className="solution-label">
                 Выберите одно из ваших решений:
               </label>
               <select
-                className="w-full border rounded px-3 py-2"
+                className="solution-dropdown"
                 value={selectedSolutionId || ""}
                 onChange={(e) => {
                   const selectedId = e.target.value;
                   setSelectedSolutionId(selectedId);
-
                   const selectedSolution = userSolutions.find(
                     (s) => s._id === selectedId
                   );
@@ -133,24 +143,27 @@ const TaskForum = ({ taskId }) => {
                 ))}
               </select>
               {selectedSolutionCode && (
-                <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto mt-2">
-                  {selectedSolutionCode}
-                </pre>
+                <pre className="code-block">{selectedSolutionCode}</pre>
               )}
             </div>
           )}
+
           <textarea
-            className="w-full border p-2 rounded"
+            ref={textareaRef}
+            className="forum-textarea"
             rows={3}
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
+            onChange={(e) => {
+              setNewComment(e.target.value);
+              adjustTextareaHeight();
+            }}
             placeholder={
               type === "public" ? "Комментарий..." : "Ваш код/пояснение..."
             }
           />
           <button
             onClick={handleSubmit}
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+            className="forum-submit"
             disabled={type === "solution" && !selectedSolutionId}
           >
             Отправить
@@ -158,29 +171,29 @@ const TaskForum = ({ taskId }) => {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="forum-comments">
         {filteredComments.map((comment) => (
-          <div key={comment._id} className="border p-3 rounded bg-gray-50">
-            <div className="flex items-center gap-2 mb-1">
+          <div key={comment._id} className="forum-comment">
+            <div className="comment-header">
               <Avatar
                 matrix={comment.userId.avatarMatrix}
                 color={comment.userId.avatarColor}
               />
-              <span className="font-semibold">{comment.userId.nickname}</span>
-              <span className="text-xs text-gray-500 ml-auto">
+              <span className="comment-nickname">
+                {comment.userId.nickname}
+              </span>
+              <span className="comment-date">
                 {new Date(comment.createdAt).toLocaleString()}
               </span>
             </div>
-            <pre className="whitespace-pre-wrap text-sm">{comment.content}</pre>
+            <pre className="comment-content">{comment.content}</pre>
             {comment.solutionCode && (
-              <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto mt-2">
-                {comment.solutionCode}
-              </pre>
+              <pre className="code-block">{comment.solutionCode}</pre>
             )}
           </div>
         ))}
         {filteredComments.length === 0 && (
-          <p className="text-sm text-gray-500">Нет комментариев.</p>
+          <p className="no-comments">Нет комментариев.</p>
         )}
       </div>
     </div>
