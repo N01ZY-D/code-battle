@@ -6,6 +6,7 @@ import { FiEdit, FiAlertOctagon, FiCheck } from "react-icons/fi";
 import Editor from "@monaco-editor/react";
 import AuthContext from "../context/AuthContext"; // Импортируем AuthContext
 import "../styles/taskPage.css";
+import TaskForum from "../components/TaskForum";
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -241,6 +242,10 @@ const TaskPage = () => {
           })()}
         </div>
       )}
+      <div style={{ marginTop: "40px" }}>
+        <h2>Обсуждение задачи</h2>
+        <TaskForum taskId={task._id} solved={result === "Правильный код!"} />
+      </div>
     </div>
   );
 };

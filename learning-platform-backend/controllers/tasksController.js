@@ -64,8 +64,14 @@ const checkSolution = async (req, res) => {
     for (const test of task.tests) {
       const { input, output } = test;
 
-      // Поддержка строковых аргументов (одно значение)
-      const inputArgs = [input];
+      // Универсальный парсинг аргументов
+      let inputArgs = input
+        .trim()
+        .split(/\s+/)
+        .map((arg) => {
+          if (!isNaN(arg)) return Number(arg);
+          return arg;
+        });
 
       console.log(`Тест: Вход: ${input} → Ожидаемый выход: "${output}"`);
 
