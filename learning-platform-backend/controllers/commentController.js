@@ -38,6 +38,7 @@ const addComment = async (req, res) => {
       userId: req.user,
       content,
       type,
+      solutionCode: req.body.solutionCode,
     });
 
     const populatedComment = await comment.populate(

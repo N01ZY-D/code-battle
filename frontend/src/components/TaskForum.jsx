@@ -7,6 +7,9 @@ const TaskForum = ({ taskId }) => {
   const [comments, setComments] = useState([]);
   const [type, setType] = useState("public"); // "public" | "solution"
   const [newComment, setNewComment] = useState("");
+  const [userSolutions, setUserSolutions] = useState([]);
+  const [selectedSolutionId, setSelectedSolutionId] = useState(null);
+  const [selectedSolutionCode, setSelectedSolutionCode] = useState("");
   const { token, user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -17,7 +20,7 @@ const TaskForum = ({ taskId }) => {
             import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
           }/api/comments/${taskId}`
         );
-        setComments(response.data); // предполагаем, что сервер возвращает массив комментариев
+        setComments(response.data);
       } catch (error) {
         console.error("Ошибка при загрузке комментариев:", error);
       }
@@ -26,20 +29,60 @@ const TaskForum = ({ taskId }) => {
     fetchComments();
   }, [taskId]);
 
+  useEffect(() => {
+    const fetchUserSolutions = async () => {
+      if (user && taskId && type === "solution") {
+        try {
+          const res = await axios.get(
+            `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          // Получаем решения пользователя
+          const allSolutions = res.data.solutions || [];
+
+          // Фильтруем решения только по текущей задаче
+          const relevantSolutions = allSolutions.filter(
+            (sol) => sol.taskId && sol.taskId._id === taskId
+          );
+
+          setUserSolutions(relevantSolutions);
+        } catch (err) {
+          console.error("Ошибка при загрузке решений пользователя:", err);
+          setUserSolutions([]); // На всякий случай — очистка при ошибке
+        }
+      }
+    };
+
+    fetchUserSolutions();
+  }, [user, taskId, type, token]);
+
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
+
+    if (type === "solution" && !selectedSolutionId) {
+      alert("Пожалуйста, выберите своё решение перед отправкой комментария.");
+      return;
+    }
+
     try {
       const { data } = await axios.post(
         `${
           import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
         }/api/comments/${taskId}`,
-        { content: newComment, type },
+        {
+          content: newComment,
+          type,
+          solutionId: type === "solution" ? selectedSolutionId : undefined,
+          solutionCode: type === "solution" ? selectedSolutionCode : undefined,
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setComments((prev) => [data, ...prev]);
       setNewComment("");
+      setSelectedSolutionId(null);
     } catch (err) {
-      alert(err.response?.data?.message || "Ошибка");
+      alert(err.response?.data?.message || "Ошибка при отправке комментария");
     }
   };
 
@@ -64,6 +107,38 @@ const TaskForum = ({ taskId }) => {
 
       {token && (
         <div className="mb-4">
+          {type === "solution" && (
+            <div className="mb-2">
+              <label className="block text-sm font-medium mb-1">
+                Выберите одно из ваших решений:
+              </label>
+              <select
+                className="w-full border rounded px-3 py-2"
+                value={selectedSolutionId || ""}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  setSelectedSolutionId(selectedId);
+
+                  const selectedSolution = userSolutions.find(
+                    (s) => s._id === selectedId
+                  );
+                  setSelectedSolutionCode(selectedSolution?.code || "");
+                }}
+              >
+                <option value="">-- Выберите решение --</option>
+                {userSolutions.map((sol) => (
+                  <option key={sol._id} value={sol._id}>
+                    {new Date(sol.createdAt).toLocaleString()}
+                  </option>
+                ))}
+              </select>
+              {selectedSolutionCode && (
+                <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto mt-2">
+                  {selectedSolutionCode}
+                </pre>
+              )}
+            </div>
+          )}
           <textarea
             className="w-full border p-2 rounded"
             rows={3}
@@ -76,6 +151,7 @@ const TaskForum = ({ taskId }) => {
           <button
             onClick={handleSubmit}
             className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+            disabled={type === "solution" && !selectedSolutionId}
           >
             Отправить
           </button>
@@ -96,6 +172,11 @@ const TaskForum = ({ taskId }) => {
               </span>
             </div>
             <pre className="whitespace-pre-wrap text-sm">{comment.content}</pre>
+            {comment.solutionCode && (
+              <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto mt-2">
+                {comment.solutionCode}
+              </pre>
+            )}
           </div>
         ))}
         {filteredComments.length === 0 && (
