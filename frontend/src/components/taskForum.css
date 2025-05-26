@@ -125,3 +125,24 @@
   font-size: 14px;
   color: #666;
 }
+
+.delete-comment-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+.delete-comment-btn svg {
+  pointer-events: none;
+}
+
+.delete-comment-btn:hover {
+  color: red;
+  border: 1px solid red;
+}

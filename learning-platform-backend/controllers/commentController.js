@@ -51,5 +51,28 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
+const deleteComment = async (req, res) => {
+  const commentId = req.params.commentId;
+  const requesterId = req.user;
 
-module.exports = { getCommentsByTask, addComment };
+  try {
+    const comment = await Comment.findById(commentId).populate("userId");
+
+    if (!comment) {
+      return res.status(404).json({ message: "Комментарий не найден" });
+    }
+
+    // Только автор может удалить — проверка id
+    if (comment.userId?._id.toString() !== requesterId) {
+      return res.status(403).json({ message: "Недостаточно прав" });
+    }
+
+    await comment.deleteOne();
+
+    res.status(200).json({ message: "Комментарий удалён" });
+  } catch (err) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+module.exports = { getCommentsByTask, addComment, deleteComment };

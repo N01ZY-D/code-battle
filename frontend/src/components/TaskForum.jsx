@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useRef, use } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import Avatar from "../components/Avatar";
+import { FiX } from "react-icons/fi";
 import "./taskForum.css"; // импорт стилей
 
 const TaskForum = ({ taskId }) => {
@@ -91,6 +92,25 @@ const TaskForum = ({ taskId }) => {
       setSelectedSolutionId(null);
     } catch (err) {
       alert(err.response?.data?.message || "Ошибка при отправке комментария");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Вы уверены, что хотите удалить комментарий?")) return;
+
+    try {
+      await axios.delete(
+        `${
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+        }/api/comments/${commentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setComments((prev) => prev.filter((c) => c._id !== commentId));
+    } catch (err) {
+      console.error("Ошибка при удалении комментария:", err);
+      alert("Ошибка при удалении комментария");
     }
   };
 
@@ -185,6 +205,23 @@ const TaskForum = ({ taskId }) => {
               <span className="comment-date">
                 {new Date(comment.createdAt).toLocaleString()}
               </span>
+              {console.log("Текущий пользователь:", user)}
+              {console.log("Комментарий от:", comment.userId)}
+              {console.log("user._id:", user?._id?.toString())}
+              {console.log(
+                "comment.userId._id:",
+                comment.userId?._id?.toString()
+              )}
+              {(user?._id?.toString() === comment.userId._id?.toString() ||
+                user?.role === "admin") && (
+                <button
+                  className="delete-comment-btn"
+                  onClick={() => handleDeleteComment(comment._id)}
+                  title="Удалить комментарий"
+                >
+                  <FiX size={24} />
+                </button>
+              )}
             </div>
             <pre className="comment-content">{comment.content}</pre>
             {comment.solutionCode && (
