@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { FiEdit, FiAlertOctagon, FiCheck } from "react-icons/fi";
-import Editor from "@monaco-editor/react";
+import Editor, { loader } from "@monaco-editor/react";
 import AuthContext from "../context/AuthContext"; // Импортируем AuthContext
 import "../styles/taskPage.css";
 import TaskForum from "../components/TaskForum";
@@ -52,6 +52,12 @@ const TaskPage = () => {
   const handleCodeChange = (e) => {
     setUserCode(e.target.value);
   };
+
+  loader.config({
+    paths: {
+      vs: "https://www.unpkg.com/monaco-editor/min/vs",
+    },
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
