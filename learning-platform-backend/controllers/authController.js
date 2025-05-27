@@ -84,7 +84,7 @@ const getUserData = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ email: user.email, role: user.role });
+    res.json({ _id: user._id, email: user.email, role: user.role });
   } catch (error) {
     console.error("Error in /me route:", error.message);
     res.status(500).json({ message: "Server error" });
