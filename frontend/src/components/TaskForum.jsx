@@ -18,6 +18,7 @@ const TaskForum = ({ taskId }) => {
   const [userSolutions, setUserSolutions] = useState([]);
   const [selectedSolutionId, setSelectedSolutionId] = useState(null);
   const [selectedSolutionCode, setSelectedSolutionCode] = useState("");
+  const [expandedComments, setExpandedComments] = useState(new Set());
   const { token, user } = useContext(AuthContext);
   const textareaRef = useRef(null);
 
@@ -146,12 +147,29 @@ const TaskForum = ({ taskId }) => {
     }
   };
 
+  const toggleComment = (id) => {
+    setExpandedComments((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const isExpanded = (id) => expandedComments.has(id);
+
   const renderComments = (list, depth = 0) =>
     list.map((comment) => (
       <div
         key={comment._id}
         className="forum-comment"
-        style={{ marginLeft: depth * 20 }}
+        style={{
+          ...(depth !== 0 && { marginLeft: 20 }),
+          ...(depth !== 0 && { marginTop: 10 }),
+        }}
       >
         <div className="comment-header">
           <Avatar
@@ -190,7 +208,21 @@ const TaskForum = ({ taskId }) => {
           </button>
         </div>
 
+        {comment.replies?.length > 0 && (
+          <div className="toggle-replies">
+            <button
+              onClick={() => toggleComment(comment._id)}
+              className="toggle-btn"
+            >
+              {isExpanded(comment._id)
+                ? "Свернуть ответы"
+                : `Показать ответы (${comment.replies.length})`}
+            </button>
+          </div>
+        )}
+
         {comment.replies?.length > 0 &&
+          isExpanded(comment._id) &&
           renderComments(comment.replies, depth + 1)}
       </div>
     ));

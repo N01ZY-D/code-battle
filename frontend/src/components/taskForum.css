@@ -146,3 +146,21 @@
   color: red;
   border: 1px solid red;
 }
+
+.comment-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.toggle-replies {
+  margin-top: 4px;
+}
+
+.toggle-btn {
+  cursor: pointer;
+  font-size: 0.9em;
+}
+.toggle-btn:hover {
+  text-decoration: underline;
+}
