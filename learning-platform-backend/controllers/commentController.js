@@ -1,15 +1,39 @@
 const Comment = require("../models/Comment");
 const User = require("../models/User");
 
+const buildCommentTree = (comments) => {
+  const map = {};
+  const roots = [];
+
+  comments.forEach((comment) => {
+    comment = comment.toObject(); // конвертация из Mongoose
+    comment.replies = [];
+    map[comment._id] = comment;
+  });
+
+  comments.forEach((comment) => {
+    const parent = comment.parentId?.toString();
+    if (parent && map[parent]) {
+      map[parent].replies.push(map[comment._id]);
+    } else {
+      roots.push(map[comment._id]);
+    }
+  });
+
+  return roots;
+};
+
 const getCommentsByTask = async (req, res) => {
   const { taskId } = req.params;
 
   try {
     const comments = await Comment.find({ taskId })
       .populate("userId", "nickname avatarMatrix avatarColor")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 }); // порядок важен для дерева
 
-    res.json(comments);
+    const tree = buildCommentTree(comments);
+
+    res.json(tree);
   } catch (err) {
     res.status(500).json({ message: "Ошибка сервера" });
   }
@@ -17,11 +41,10 @@ const getCommentsByTask = async (req, res) => {
 
 const addComment = async (req, res) => {
   const { taskId } = req.params;
-  const { content, type } = req.body;
+  const { content, type, solutionCode, parentId } = req.body;
 
   try {
     const user = await User.findById(req.user);
-
     if (!user)
       return res.status(404).json({ message: "Пользователь не найден" });
 
@@ -38,7 +61,8 @@ const addComment = async (req, res) => {
       userId: req.user,
       content,
       type,
-      solutionCode: req.body.solutionCode,
+      solutionCode,
+      parentId: parentId || null,
     });
 
     const populatedComment = await comment.populate(
@@ -51,6 +75,7 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
+
 const deleteComment = async (req, res) => {
   const commentId = req.params.commentId;
   const requesterId = req.user;
@@ -75,4 +100,66 @@ const deleteComment = async (req, res) => {
   }
 };
 
-module.exports = { getCommentsByTask, addComment, deleteComment };
+const likeComment = async (req, res) => {
+  const userId = req.user;
+  const commentId = req.params.id;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment)
+      return res.status(404).json({ message: "Комментарий не найден" });
+
+    if (!comment.likes.includes(userId)) {
+      comment.likes.push(userId);
+      comment.dislikes = comment.dislikes.filter(
+        (id) => id.toString() !== userId
+      );
+    } else {
+      comment.likes = comment.likes.filter((id) => id.toString() !== userId);
+    }
+
+    await comment.save();
+    res.json({
+      likes: comment.likes.length,
+      dislikes: comment.dislikes.length,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+const dislikeComment = async (req, res) => {
+  const userId = req.user;
+  const commentId = req.params.id;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment)
+      return res.status(404).json({ message: "Комментарий не найден" });
+
+    if (!comment.dislikes.includes(userId)) {
+      comment.dislikes.push(userId);
+      comment.likes = comment.likes.filter((id) => id.toString() !== userId);
+    } else {
+      comment.dislikes = comment.dislikes.filter(
+        (id) => id.toString() !== userId
+      );
+    }
+
+    await comment.save();
+    res.json({
+      likes: comment.likes.length,
+      dislikes: comment.dislikes.length,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
+module.exports = {
+  getCommentsByTask,
+  addComment,
+  deleteComment,
+  likeComment,
+  dislikeComment,
+};

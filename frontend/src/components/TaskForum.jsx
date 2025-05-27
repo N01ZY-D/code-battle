@@ -1,41 +1,71 @@
-import { useState, useEffect, useContext, useRef, use } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import Avatar from "../components/Avatar";
-import { FiX } from "react-icons/fi";
-import "./taskForum.css"; // импорт стилей
+import {
+  FiX,
+  FiThumbsUp,
+  FiThumbsDown,
+  FiCornerDownRight,
+} from "react-icons/fi";
+import "./taskForum.css";
 
 const TaskForum = ({ taskId }) => {
   const [comments, setComments] = useState([]);
   const [type, setType] = useState("public");
   const [newComment, setNewComment] = useState("");
+  const [replyTo, setReplyTo] = useState(null);
   const [userSolutions, setUserSolutions] = useState([]);
   const [selectedSolutionId, setSelectedSolutionId] = useState(null);
   const [selectedSolutionCode, setSelectedSolutionCode] = useState("");
   const { token, user } = useContext(AuthContext);
   const textareaRef = useRef(null);
 
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+        }/api/comments/${taskId}`
+      );
+      setComments(res.data);
+    } catch (err) {
+      console.error("Ошибка при загрузке комментариев:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
-          }/api/comments/${taskId}`
-        );
-        setComments(response.data);
-      } catch (error) {
-        console.error("Ошибка при загрузке комментариев:", error);
-      }
-    };
     fetchComments();
   }, [taskId]);
 
+  useEffect(() => {
+    if (!user || !taskId) return;
+
+    const fetchUserSolutions = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const relevant = (res.data.solutions || []).filter(
+          (s) => s.taskId && s.taskId._id === taskId
+        );
+        setUserSolutions(relevant);
+      } catch (err) {
+        console.error("Ошибка при загрузке решений:", err);
+      }
+    };
+    fetchUserSolutions();
+  }, [user, taskId, token]);
+
   const adjustTextareaHeight = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto"; // Сначала сбрасываем, чтобы пересчитать
-      textarea.style.height = `${textarea.scrollHeight + 3}px`; // Устанавливаем нужную высоту
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${
+        textareaRef.current.scrollHeight + 3
+      }px`;
     }
   };
 
@@ -43,94 +73,147 @@ const TaskForum = ({ taskId }) => {
     adjustTextareaHeight();
   }, [newComment]);
 
-  useEffect(() => {
-    const fetchUserSolutions = async () => {
-      if (user && taskId) {
-        try {
-          const res = await axios.get(
-            `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          const allSolutions = res.data.solutions || [];
-          const relevantSolutions = allSolutions.filter(
-            (sol) =>
-              sol.taskId && sol.taskId._id?.toString() === taskId.toString()
-          );
-          setUserSolutions(relevantSolutions);
-        } catch (err) {
-          console.error("Ошибка при загрузке решений пользователя:", err);
-          setUserSolutions([]);
-        }
-      }
-    };
-    fetchUserSolutions();
-  }, [user, taskId, token]);
-
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
 
     if (type === "solution" && !selectedSolutionId) {
-      alert("Пожалуйста, выберите своё решение перед отправкой комментария.");
+      alert("Выберите решение перед отправкой.");
       return;
     }
 
     try {
-      const { data } = await axios.post(
+      const res = await axios.post(
         `${
           import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
         }/api/comments/${taskId}`,
         {
           content: newComment,
           type,
+          parentId: replyTo?._id || null,
           solutionId: type === "solution" ? selectedSolutionId : undefined,
           solutionCode: type === "solution" ? selectedSolutionCode : undefined,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setComments((prev) => [data, ...prev]);
+      await fetchComments();
       setNewComment("");
+      setReplyTo(null);
       setSelectedSolutionId(null);
     } catch (err) {
-      alert(err.response?.data?.message || "Ошибка при отправке комментария");
+      alert(err.response?.data?.message || "Ошибка при отправке");
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!window.confirm("Вы уверены, что хотите удалить комментарий?")) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Удалить комментарий?")) return;
 
     try {
       await axios.delete(
-        `${
-          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
-        }/api/comments/${commentId}`,
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/comments/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setComments((prev) => prev.filter((c) => c._id !== commentId));
+      await fetchComments();
+      //setComments((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
-      console.error("Ошибка при удалении комментария:", err);
-      alert("Ошибка при удалении комментария");
+      alert("Ошибка при удалении");
     }
   };
 
+  const sendReaction = async (id, type) => {
+    try {
+      await axios.post(
+        `${
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+        }/api/comments/${id}/${type}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
+        }/api/comments/${taskId}`
+      );
+      setComments(res.data);
+    } catch (err) {
+      console.error("Ошибка при реакции:", err);
+    }
+  };
+
+  const renderComments = (list, depth = 0) =>
+    list.map((comment) => (
+      <div
+        key={comment._id}
+        className="forum-comment"
+        style={{ marginLeft: depth * 20 }}
+      >
+        <div className="comment-header">
+          <Avatar
+            matrix={comment.userId.avatarMatrix}
+            color={comment.userId.avatarColor}
+          />
+          <span className="comment-nickname">{comment.userId.nickname}</span>
+          <span className="comment-date">
+            {new Date(comment.createdAt).toLocaleString()}
+          </span>
+          {(user?._id === comment.userId._id || user?.role === "admin") && (
+            <button
+              className="delete-comment-btn"
+              onClick={() => handleDelete(comment._id)}
+              title="Удалить"
+            >
+              <FiX />
+            </button>
+          )}
+        </div>
+
+        <pre className="comment-content">{comment.content}</pre>
+        {comment.solutionCode && (
+          <pre className="code-block">{comment.solutionCode}</pre>
+        )}
+
+        <div className="comment-actions">
+          <button onClick={() => setReplyTo(comment)} className="reply-btn">
+            <FiCornerDownRight /> Ответить
+          </button>
+          <button onClick={() => sendReaction(comment._id, "like")}>
+            <FiThumbsUp /> {comment.likes?.length || 0}
+          </button>
+          <button onClick={() => sendReaction(comment._id, "dislike")}>
+            <FiThumbsDown /> {comment.dislikes?.length || 0}
+          </button>
+        </div>
+
+        {comment.replies?.length > 0 &&
+          renderComments(comment.replies, depth + 1)}
+      </div>
+    ));
+
   const filteredComments = comments.filter((c) => c.type === type);
-  let isDisabled = userSolutions.length === 0;
-  console.log("isDisabled", isDisabled);
+  const isSolutionDisabled = userSolutions.length === 0;
 
   return (
     <div className="forum-container">
       <div className="forum-tabs">
         <button
           className={`forum-tab ${type === "public" ? "active" : ""}`}
-          onClick={() => setType("public")}
+          onClick={() => {
+            setType("public");
+            setReplyTo(null);
+          }}
         >
           Обсуждение задачи
         </button>
         <button
           className={`forum-tab ${type === "solution" ? "active" : ""}`}
-          onClick={() => setType("solution")}
-          disabled={isDisabled}
+          onClick={() => {
+            setType("solution");
+            setReplyTo(null);
+          }}
+          disabled={isSolutionDisabled}
         >
           Обсуждение решений
         </button>
@@ -138,27 +221,35 @@ const TaskForum = ({ taskId }) => {
 
       {token && (
         <div className="forum-form">
+          {replyTo && (
+            <div className="reply-indicator">
+              Ответ на: <strong>{replyTo.userId.nickname}</strong> —{" "}
+              {replyTo.content.slice(0, 50)}...
+              <button
+                onClick={() => setReplyTo(null)}
+                className="cancel-reply-btn"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           {type === "solution" && (
             <div className="solution-select">
-              <label className="solution-label">
-                Выберите одно из ваших решений:
-              </label>
+              <label>Выберите одно из своих решений:</label>
               <select
-                className="solution-dropdown"
                 value={selectedSolutionId || ""}
                 onChange={(e) => {
-                  const selectedId = e.target.value;
-                  setSelectedSolutionId(selectedId);
-                  const selectedSolution = userSolutions.find(
-                    (s) => s._id === selectedId
-                  );
-                  setSelectedSolutionCode(selectedSolution?.code || "");
+                  const selected = e.target.value;
+                  setSelectedSolutionId(selected);
+                  const found = userSolutions.find((s) => s._id === selected);
+                  setSelectedSolutionCode(found?.code || "");
                 }}
               >
-                <option value="">-- Выберите решение --</option>
-                {userSolutions.map((sol) => (
-                  <option key={sol._id} value={sol._id}>
-                    {new Date(sol.createdAt).toLocaleString()}
+                <option value="">-- Выберите --</option>
+                {userSolutions.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {new Date(s.createdAt).toLocaleString()}
                   </option>
                 ))}
               </select>
@@ -170,15 +261,14 @@ const TaskForum = ({ taskId }) => {
 
           <textarea
             ref={textareaRef}
-            className="forum-textarea"
-            rows={3}
             value={newComment}
-            onChange={(e) => {
-              setNewComment(e.target.value);
-              adjustTextareaHeight();
-            }}
+            onChange={(e) => setNewComment(e.target.value)}
+            rows={3}
+            className="forum-textarea"
             placeholder={
-              type === "public" ? "Комментарий..." : "Ваш код/пояснение..."
+              type === "solution"
+                ? "Комментарий к решению..."
+                : "Комментарий..."
             }
           />
           <button
@@ -192,44 +282,9 @@ const TaskForum = ({ taskId }) => {
       )}
 
       <div className="forum-comments">
-        {filteredComments.map((comment) => (
-          <div key={comment._id} className="forum-comment">
-            <div className="comment-header">
-              <Avatar
-                matrix={comment.userId.avatarMatrix}
-                color={comment.userId.avatarColor}
-              />
-              <span className="comment-nickname">
-                {comment.userId.nickname}
-              </span>
-              <span className="comment-date">
-                {new Date(comment.createdAt).toLocaleString()}
-              </span>
-              {console.log("Текущий пользователь:", user)}
-              {console.log("Комментарий от:", comment.userId)}
-              {console.log("user._id:", user?._id?.toString())}
-              {console.log(
-                "comment.userId._id:",
-                comment.userId?._id?.toString()
-              )}
-              {(user?._id?.toString() === comment.userId._id?.toString() ||
-                user?.role === "admin") && (
-                <button
-                  className="delete-comment-btn"
-                  onClick={() => handleDeleteComment(comment._id)}
-                  title="Удалить комментарий"
-                >
-                  <FiX size={24} />
-                </button>
-              )}
-            </div>
-            <pre className="comment-content">{comment.content}</pre>
-            {comment.solutionCode && (
-              <pre className="code-block">{comment.solutionCode}</pre>
-            )}
-          </div>
-        ))}
-        {filteredComments.length === 0 && (
+        {filteredComments.length > 0 ? (
+          renderComments(filteredComments)
+        ) : (
           <p className="no-comments">Нет комментариев.</p>
         )}
       </div>
