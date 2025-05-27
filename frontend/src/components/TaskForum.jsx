@@ -76,7 +76,9 @@ const TaskForum = ({ taskId }) => {
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
 
-    if (type === "solution" && !selectedSolutionId) {
+    if (!newComment.trim()) return;
+    // Выбор решения обязателен только при **первичном** комментарии (не reply)
+    if (type === "solution" && !selectedSolutionId && !replyTo) {
       alert("Выберите решение перед отправкой.");
       return;
     }
@@ -274,7 +276,7 @@ const TaskForum = ({ taskId }) => {
           <button
             onClick={handleSubmit}
             className="forum-submit"
-            disabled={type === "solution" && !selectedSolutionId}
+            disabled={type === "solution" && !selectedSolutionId && !replyTo}
           >
             Отправить
           </button>

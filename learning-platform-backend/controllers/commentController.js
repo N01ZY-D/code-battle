@@ -52,8 +52,11 @@ const addComment = async (req, res) => {
       const solved = user.solutions?.some(
         (s) => s.taskId.toString() === taskId
       );
-      if (!solved)
-        return res.status(403).json({ message: "Вы не решили эту задачу" });
+      if (!solved) {
+        return res.status(403).json({
+          message: "Вы не решили эту задачу и не можете опубликовать решение",
+        });
+      }
     }
 
     const comment = await Comment.create({
