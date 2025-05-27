@@ -101,6 +101,7 @@ const TaskForum = ({ taskId }) => {
       setNewComment("");
       setReplyTo(null);
       setSelectedSolutionId(null);
+      setSelectedSolutionCode("");
     } catch (err) {
       alert(err.response?.data?.message || "Ошибка при отправке");
     }
