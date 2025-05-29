@@ -41,6 +41,22 @@ code {
   gap: 10px;
 }
 
+.lower-button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: center;
+}
+
+.lower-button-container a {
+  display: flex;
+}
+
+.lower-button-container button {
+  flex: 1;
+  min-width: 33vh;
+}
+
 .upper-button-container button:hover,
 .lower-button-container button:hover {
   background-color: #344756;
