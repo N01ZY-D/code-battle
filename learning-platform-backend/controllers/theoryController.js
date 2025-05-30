@@ -26,7 +26,7 @@ const getTheory = async (req, res) => {
 
 const createTheory = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }
@@ -78,7 +78,7 @@ const updateTheory = async (req, res) => {
 
 const reorderTheories = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }
@@ -102,7 +102,7 @@ const reorderTheories = async (req, res) => {
 
 const deleteTheory = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }

@@ -81,7 +81,7 @@ const addComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   const commentId = req.params.commentId;
-  const requesterId = req.user;
+  const { id: requesterId, role } = req.user;
 
   try {
     const comment = await Comment.findById(commentId).populate("userId");
@@ -90,8 +90,10 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ message: "Комментарий не найден" });
     }
 
-    // Только автор может удалить — проверка id
-    if (comment.userId?._id.toString() !== requesterId) {
+    const isAuthor = comment.userId?._id.toString() === requesterId;
+    const isAdmin = role === "admin";
+
+    if (!isAuthor && !isAdmin) {
       return res.status(403).json({ message: "Недостаточно прав" });
     }
 

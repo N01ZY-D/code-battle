@@ -29,7 +29,7 @@ const checkSolution = async (req, res) => {
   try {
     const { taskId } = req.params;
     const { code } = req.body;
-    const userId = req.user;
+    const userId = req.user.id;
 
     // Находим задание
     const task = await Task.findById(taskId);
@@ -161,7 +161,7 @@ const checkSolution = async (req, res) => {
 
 const createTask = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }
@@ -216,7 +216,7 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }
@@ -236,7 +236,7 @@ const updateTask = async (req, res) => {
 
 const reorderTasks = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }
@@ -256,7 +256,7 @@ const reorderTasks = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ message: "Доступ запрещен" });
     }
