@@ -106,8 +106,30 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const editComment = async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  try {
+    const comment = await Comment.findById(id);
+    if (!comment)
+      return res.status(404).json({ message: "Комментарий не найден" });
+
+    if (comment.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Нет прав на редактирование" });
+    }
+
+    comment.content = content;
+    await comment.save();
+
+    res.json({ message: "Комментарий обновлён" });
+  } catch (err) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 const likeComment = async (req, res) => {
-  const userId = req.user;
+  const userId = req.user.id;
   const commentId = req.params.id;
 
   try {
@@ -135,7 +157,7 @@ const likeComment = async (req, res) => {
 };
 
 const dislikeComment = async (req, res) => {
-  const userId = req.user;
+  const userId = req.user.id;
   const commentId = req.params.id;
 
   try {
@@ -166,6 +188,7 @@ module.exports = {
   getCommentsByTask,
   addComment,
   deleteComment,
+  editComment,
   likeComment,
   dislikeComment,
 };

@@ -4,6 +4,7 @@ const {
   getCommentsByTask,
   addComment,
   deleteComment,
+  editComment,
   likeComment,
   dislikeComment,
 } = require("../controllers/commentController");
@@ -15,5 +16,7 @@ router.delete("/:commentId", auth, deleteComment);
 
 router.post("/:id/like", auth, likeComment);
 router.post("/:id/dislike", auth, dislikeComment);
+
+router.patch("/:id", auth, editComment);
 
 module.exports = router;

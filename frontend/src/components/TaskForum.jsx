@@ -4,6 +4,7 @@ import AuthContext from "../context/AuthContext";
 import Avatar from "../components/Avatar";
 import {
   FiX,
+  FiEdit,
   FiThumbsUp,
   FiThumbsDown,
   FiCornerDownRight,
@@ -26,6 +27,8 @@ const TaskForum = ({
   const [expandedComments, setExpandedComments] = useState(new Set());
   const { token, user } = useContext(AuthContext);
   const textareaRef = useRef(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
 
   const fetchComments = async () => {
     try {
@@ -131,6 +134,28 @@ const TaskForum = ({
     }
   };
 
+  const handleEdit = (comment) => {
+    setEditingCommentId(comment._id);
+    setEditedContent(comment.content);
+  };
+
+  const handleSaveEdit = async (id) => {
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/comments/${id}`,
+        { content: editedContent },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await fetchComments();
+      setEditingCommentId(null);
+      setEditedContent("");
+    } catch (err) {
+      alert("Ошибка при редактировании комментария");
+    }
+  };
+
   const sendReaction = async (id, type) => {
     try {
       await axios.post(
@@ -195,11 +220,38 @@ const TaskForum = ({
               <FiX />
             </button>
           )}
+
+          {user?._id === comment.userId._id && (
+            <button
+              className="edit-comment-btn"
+              onClick={() => handleEdit(comment)}
+              title="Редактировать"
+            >
+              <FiEdit />
+            </button>
+          )}
         </div>
 
-        <pre className="comment-content">{comment.content}</pre>
         {comment.solutionCode && (
           <pre className="code-block">{comment.solutionCode}</pre>
+        )}
+
+        {editingCommentId === comment._id ? (
+          <div className="edit-area">
+            <textarea
+              className="edit-textarea"
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+            />
+            <div className="edit-buttons">
+              <button onClick={() => handleSaveEdit(comment._id)}>
+                Сохранить
+              </button>
+              <button onClick={() => setEditingCommentId(null)}>Отмена</button>
+            </div>
+          </div>
+        ) : (
+          <pre className="comment-content">{comment.content}</pre>
         )}
 
         <div className="comment-actions">
