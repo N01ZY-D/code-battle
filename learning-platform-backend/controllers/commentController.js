@@ -42,9 +42,10 @@ const getCommentsByTask = async (req, res) => {
 const addComment = async (req, res) => {
   const { taskId } = req.params;
   const { content, type, solutionCode, parentId } = req.body;
+  console.log(req.body);
 
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user)
       return res.status(404).json({ message: "Пользователь не найден" });
 
@@ -61,7 +62,7 @@ const addComment = async (req, res) => {
 
     const comment = await Comment.create({
       taskId,
-      userId: req.user,
+      userId: req.user.id,
       content,
       type,
       solutionCode,
@@ -81,7 +82,7 @@ const addComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   const commentId = req.params.commentId;
-  const requesterId = req.user;
+  const { id: requesterId, role } = req.user;
 
   try {
     const comment = await Comment.findById(commentId).populate("userId");
@@ -90,8 +91,10 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ message: "Комментарий не найден" });
     }
 
-    // Только автор может удалить — проверка id
-    if (comment.userId?._id.toString() !== requesterId) {
+    const isAuthor = comment.userId?._id.toString() === requesterId;
+    const isAdmin = role === "admin";
+
+    if (!isAuthor && !isAdmin) {
       return res.status(403).json({ message: "Недостаточно прав" });
     }
 
@@ -103,8 +106,30 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const editComment = async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  try {
+    const comment = await Comment.findById(id);
+    if (!comment)
+      return res.status(404).json({ message: "Комментарий не найден" });
+
+    if (comment.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Нет прав на редактирование" });
+    }
+
+    comment.content = content;
+    await comment.save();
+
+    res.json({ message: "Комментарий обновлён" });
+  } catch (err) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 const likeComment = async (req, res) => {
-  const userId = req.user;
+  const userId = req.user.id;
   const commentId = req.params.id;
 
   try {
@@ -132,7 +157,7 @@ const likeComment = async (req, res) => {
 };
 
 const dislikeComment = async (req, res) => {
-  const userId = req.user;
+  const userId = req.user.id;
   const commentId = req.params.id;
 
   try {
@@ -163,6 +188,7 @@ module.exports = {
   getCommentsByTask,
   addComment,
   deleteComment,
+  editComment,
   likeComment,
   dislikeComment,
 };

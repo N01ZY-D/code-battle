@@ -4,15 +4,21 @@ import AuthContext from "../context/AuthContext";
 import Avatar from "../components/Avatar";
 import {
   FiX,
+  FiEdit,
   FiThumbsUp,
   FiThumbsDown,
   FiCornerDownRight,
 } from "react-icons/fi";
 import "./taskForum.css";
 
-const TaskForum = ({ taskId }) => {
+const TaskForum = ({
+  taskId,
+  defaultType = "public",
+  showTabs = true,
+  allowSolutionSelect = "true",
+}) => {
   const [comments, setComments] = useState([]);
-  const [type, setType] = useState("public");
+  const [type, setType] = useState(defaultType);
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [userSolutions, setUserSolutions] = useState([]);
@@ -21,6 +27,8 @@ const TaskForum = ({ taskId }) => {
   const [expandedComments, setExpandedComments] = useState(new Set());
   const { token, user } = useContext(AuthContext);
   const textareaRef = useRef(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
 
   const fetchComments = async () => {
     try {
@@ -91,6 +99,7 @@ const TaskForum = ({ taskId }) => {
         }/api/comments/${taskId}`,
         {
           content: newComment,
+          entityType: "task",
           type,
           parentId: replyTo?._id || null,
           solutionId: type === "solution" ? selectedSolutionId : undefined,
@@ -122,6 +131,28 @@ const TaskForum = ({ taskId }) => {
       //setComments((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
       alert("Ошибка при удалении");
+    }
+  };
+
+  const handleEdit = (comment) => {
+    setEditingCommentId(comment._id);
+    setEditedContent(comment.content);
+  };
+
+  const handleSaveEdit = async (id) => {
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/comments/${id}`,
+        { content: editedContent },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await fetchComments();
+      setEditingCommentId(null);
+      setEditedContent("");
+    } catch (err) {
+      alert("Ошибка при редактировании комментария");
     }
   };
 
@@ -189,11 +220,38 @@ const TaskForum = ({ taskId }) => {
               <FiX />
             </button>
           )}
+
+          {user?._id === comment.userId._id && (
+            <button
+              className="edit-comment-btn"
+              onClick={() => handleEdit(comment)}
+              title="Редактировать"
+            >
+              <FiEdit />
+            </button>
+          )}
         </div>
 
-        <pre className="comment-content">{comment.content}</pre>
         {comment.solutionCode && (
           <pre className="code-block">{comment.solutionCode}</pre>
+        )}
+
+        {editingCommentId === comment._id ? (
+          <div className="edit-area">
+            <textarea
+              className="edit-textarea"
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+            />
+            <div className="edit-buttons">
+              <button onClick={() => handleSaveEdit(comment._id)}>
+                Сохранить
+              </button>
+              <button onClick={() => setEditingCommentId(null)}>Отмена</button>
+            </div>
+          </div>
+        ) : (
+          <pre className="comment-content">{comment.content}</pre>
         )}
 
         <div className="comment-actions">
@@ -232,27 +290,29 @@ const TaskForum = ({ taskId }) => {
 
   return (
     <div className="forum-container">
-      <div className="forum-tabs">
-        <button
-          className={`forum-tab ${type === "public" ? "active" : ""}`}
-          onClick={() => {
-            setType("public");
-            setReplyTo(null);
-          }}
-        >
-          Обсуждение задачи
-        </button>
-        <button
-          className={`forum-tab ${type === "solution" ? "active" : ""}`}
-          onClick={() => {
-            setType("solution");
-            setReplyTo(null);
-          }}
-          disabled={isSolutionDisabled}
-        >
-          Обсуждение решений
-        </button>
-      </div>
+      {showTabs && (
+        <div className="forum-tabs">
+          <button
+            className={`forum-tab ${type === "public" ? "active" : ""}`}
+            onClick={() => {
+              setType("public");
+              setReplyTo(null);
+            }}
+          >
+            Обсуждение задачи
+          </button>
+          <button
+            className={`forum-tab ${type === "solution" ? "active" : ""}`}
+            onClick={() => {
+              setType("solution");
+              setReplyTo(null);
+            }}
+            disabled={isSolutionDisabled}
+          >
+            Обсуждение решений
+          </button>
+        </div>
+      )}
 
       {token && (
         <div className="forum-form">
@@ -269,28 +329,28 @@ const TaskForum = ({ taskId }) => {
             </div>
           )}
 
-          {type === "solution" && (
+          {allowSolutionSelect && type === "solution" && (
             <div className="solution-select">
-              <label>Выберите одно из своих решений:</label>
+              <label htmlFor="solution-dropdown">Выберите решение:</label>
               <select
+                id="solution-dropdown"
                 value={selectedSolutionId || ""}
                 onChange={(e) => {
-                  const selected = e.target.value;
-                  setSelectedSolutionId(selected);
-                  const found = userSolutions.find((s) => s._id === selected);
-                  setSelectedSolutionCode(found?.code || "");
+                  const selectedId = e.target.value;
+                  const solution = userSolutions.find(
+                    (s) => s._id === selectedId
+                  );
+                  setSelectedSolutionId(selectedId);
+                  setSelectedSolutionCode(solution?.code || "");
                 }}
               >
-                <option value="">-- Выберите --</option>
-                {userSolutions.map((s) => (
-                  <option key={s._id} value={s._id}>
-                    {new Date(s.createdAt).toLocaleString()}
+                <option value="">-- выберите решение --</option>
+                {userSolutions.map((solution) => (
+                  <option key={solution._id} value={solution._id}>
+                    {new Date(solution.createdAt).toLocaleString()}
                   </option>
                 ))}
               </select>
-              {selectedSolutionCode && (
-                <pre className="code-block">{selectedSolutionCode}</pre>
-              )}
             </div>
           )}
 

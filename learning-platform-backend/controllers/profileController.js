@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user)
+    const user = await User.findById(req.user.id)
       .select("nickname avatarMatrix avatarColor solvedTasksCount solutions")
       .populate({
         path: "solutions.taskId",
@@ -26,7 +26,7 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { nickname, avatar } = req.body;
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
 
     if (!user)
       return res.status(404).json({ message: "Пользователь не найден" });
