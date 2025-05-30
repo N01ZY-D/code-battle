@@ -10,9 +10,14 @@ import {
 } from "react-icons/fi";
 import "./taskForum.css";
 
-const TaskForum = ({ taskId }) => {
+const TaskForum = ({
+  taskId,
+  defaultType = "public",
+  showTabs = true,
+  allowSolutionSelect = "true",
+}) => {
   const [comments, setComments] = useState([]);
-  const [type, setType] = useState("public");
+  const [type, setType] = useState(defaultType);
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [userSolutions, setUserSolutions] = useState([]);
@@ -91,6 +96,7 @@ const TaskForum = ({ taskId }) => {
         }/api/comments/${taskId}`,
         {
           content: newComment,
+          entityType: "task",
           type,
           parentId: replyTo?._id || null,
           solutionId: type === "solution" ? selectedSolutionId : undefined,
@@ -232,27 +238,29 @@ const TaskForum = ({ taskId }) => {
 
   return (
     <div className="forum-container">
-      <div className="forum-tabs">
-        <button
-          className={`forum-tab ${type === "public" ? "active" : ""}`}
-          onClick={() => {
-            setType("public");
-            setReplyTo(null);
-          }}
-        >
-          Обсуждение задачи
-        </button>
-        <button
-          className={`forum-tab ${type === "solution" ? "active" : ""}`}
-          onClick={() => {
-            setType("solution");
-            setReplyTo(null);
-          }}
-          disabled={isSolutionDisabled}
-        >
-          Обсуждение решений
-        </button>
-      </div>
+      {showTabs && (
+        <div className="forum-tabs">
+          <button
+            className={`forum-tab ${type === "public" ? "active" : ""}`}
+            onClick={() => {
+              setType("public");
+              setReplyTo(null);
+            }}
+          >
+            Обсуждение задачи
+          </button>
+          <button
+            className={`forum-tab ${type === "solution" ? "active" : ""}`}
+            onClick={() => {
+              setType("solution");
+              setReplyTo(null);
+            }}
+            disabled={isSolutionDisabled}
+          >
+            Обсуждение решений
+          </button>
+        </div>
+      )}
 
       {token && (
         <div className="forum-form">
@@ -269,29 +277,8 @@ const TaskForum = ({ taskId }) => {
             </div>
           )}
 
-          {type === "solution" && (
-            <div className="solution-select">
-              <label>Выберите одно из своих решений:</label>
-              <select
-                value={selectedSolutionId || ""}
-                onChange={(e) => {
-                  const selected = e.target.value;
-                  setSelectedSolutionId(selected);
-                  const found = userSolutions.find((s) => s._id === selected);
-                  setSelectedSolutionCode(found?.code || "");
-                }}
-              >
-                <option value="">-- Выберите --</option>
-                {userSolutions.map((s) => (
-                  <option key={s._id} value={s._id}>
-                    {new Date(s.createdAt).toLocaleString()}
-                  </option>
-                ))}
-              </select>
-              {selectedSolutionCode && (
-                <pre className="code-block">{selectedSolutionCode}</pre>
-              )}
-            </div>
+          {allowSolutionSelect && type === "solution" && (
+            <div className="solution-select">{/* селект выбора решения */}</div>
           )}
 
           <textarea

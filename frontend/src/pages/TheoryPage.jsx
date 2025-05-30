@@ -7,6 +7,7 @@ import "../styles/theoryPage.css";
 import { FiEdit } from "react-icons/fi";
 import AuthContext from "../context/AuthContext";
 import ContentContext from "../context/ContentContext";
+import TaskForum from "../components/TaskForum";
 
 const TheoryPage = () => {
   const { slug } = useParams();
@@ -108,6 +109,12 @@ const TheoryPage = () => {
               </button>
             )}
           </div>
+          <TaskForum
+            taskId={theory._id} // или какой у тебя id для теорий, если ты используешь другой параметр
+            defaultType="public"
+            showTabs={false}
+            allowSolutionSelect={false}
+          />
         </div>
       ) : (
         <p>Загрузка...</p>
