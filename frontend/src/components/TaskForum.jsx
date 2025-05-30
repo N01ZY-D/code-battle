@@ -278,7 +278,28 @@ const TaskForum = ({
           )}
 
           {allowSolutionSelect && type === "solution" && (
-            <div className="solution-select">{/* селект выбора решения */}</div>
+            <div className="solution-select">
+              <label htmlFor="solution-dropdown">Выберите решение:</label>
+              <select
+                id="solution-dropdown"
+                value={selectedSolutionId || ""}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  const solution = userSolutions.find(
+                    (s) => s._id === selectedId
+                  );
+                  setSelectedSolutionId(selectedId);
+                  setSelectedSolutionCode(solution?.code || "");
+                }}
+              >
+                <option value="">-- выберите решение --</option>
+                {userSolutions.map((solution) => (
+                  <option key={solution._id} value={solution._id}>
+                    {new Date(solution.createdAt).toLocaleString()}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
 
           <textarea

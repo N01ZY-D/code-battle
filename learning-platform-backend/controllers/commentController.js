@@ -42,9 +42,10 @@ const getCommentsByTask = async (req, res) => {
 const addComment = async (req, res) => {
   const { taskId } = req.params;
   const { content, type, solutionCode, parentId } = req.body;
+  console.log(req.body);
 
   try {
-    const user = await User.findById(req.user);
+    const user = await User.findById(req.user.id);
     if (!user)
       return res.status(404).json({ message: "Пользователь не найден" });
 
@@ -61,7 +62,7 @@ const addComment = async (req, res) => {
 
     const comment = await Comment.create({
       taskId,
-      userId: req.user,
+      userId: req.user.id,
       content,
       type,
       solutionCode,
