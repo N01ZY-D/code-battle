@@ -4,13 +4,14 @@ const createReport = async (req, res) => {
   try {
     console.log("Request body:", req.body);
 
-    const { targetType, targetId, reason } = req.body;
+    const { targetType, targetId, reason, description } = req.body;
 
     const report = await Report.create({
       reporterId: req.user.id,
       targetType,
       targetId,
       reason,
+      description,
     });
 
     res.status(201).json(report);
