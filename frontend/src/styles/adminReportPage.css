@@ -1,31 +1,65 @@
 .admin-report-container {
-  padding: 2rem;
-  max-width: 100%;
-  overflow-x: auto;
+  padding: 100px 40px 40px;
+  width: 1000px;
+  margin: 0 auto;
 }
 
-.report-table {
+.admin-report-title {
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 40px;
+  color: white;
+}
+
+.admin-report-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 5px 12px;
+  background-color: #2c2f36;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.admin-report-table th,
+.admin-report-table td {
+  background-color: #344756;
+  padding: 12px 16px;
+  text-align: center;
+  color: white;
   font-size: 14px;
+  border-radius: 8px;
+  vertical-align: middle;
 }
 
-.report-table th,
-.report-table td {
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  text-align: left;
-  vertical-align: top;
+.admin-report-table th {
+  background-color: #ffffff;
+  font-weight: bold;
+  font-size: 16px;
+  color: #242424;
 }
 
-.report-table th {
-  background-color: #f5f5f5;
+.admin-report-table tbody tr:hover td:not(.status-cell) {
+  background-color: #3a3f48;
+  transition: background-color 0.3s;
+}
+
+.status-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: #1f2833;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.status-select:focus {
+  outline: none;
+  border: 1px solid #66fcf1;
 }
 
 .monospace {
   font-family: monospace;
-  font-size: 12px;
-  color: #555;
 }
 
 .dimmed {
@@ -33,7 +67,60 @@
   font-style: italic;
 }
 
-select {
-  padding: 4px 6px;
-  font-size: 14px;
+.go-to-button {
+  display: inline-block;
+  background-color: #1f8ef1;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.go-to-button:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.no-reports {
+  text-align: center;
+  font-size: 18px;
+  color: #ccc;
+  margin-top: 30px;
+}
+
+.status-cell {
+  font-weight: 600;
+  text-transform: capitalize;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.status-cell.open {
+  background-color: #6c757d; /* серый */
+  color: white;
+}
+
+.status-cell.reviewed {
+  background-color: #28a745; /* зелёный */
+  color: white;
+}
+
+.status-cell.rejected {
+  background-color: #dc3545; /* красный */
+  color: white;
+}
+
+.status-filter {
+  background-color: #085cda;
+  padding: 5px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
