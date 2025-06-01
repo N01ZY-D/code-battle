@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import Avatar from "../components/Avatar";
@@ -30,6 +31,10 @@ const TaskForum = ({
   const textareaRef = useRef(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editedContent, setEditedContent] = useState("");
+  const location = useLocation();
+  const scrollHash = location.hash;
+  const searchParams = new URLSearchParams(location.search);
+  const scrollToCommentId = searchParams.get("commentId");
 
   const fetchComments = async () => {
     try {
@@ -82,6 +87,51 @@ const TaskForum = ({
   useEffect(() => {
     adjustTextareaHeight();
   }, [newComment]);
+
+  const findParentChain = (commentsList, targetId, chain = []) => {
+    for (const comment of commentsList) {
+      if (comment._id === targetId) {
+        return chain;
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        const res = findParentChain(comment.replies, targetId, [
+          ...chain,
+          comment._id,
+        ]);
+        if (res) return res;
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (scrollHash.startsWith("#comment-")) {
+      const commentId = scrollHash.replace("#comment-", "");
+
+      // Найти цепочку родителей
+      const parentsChain = findParentChain(comments, commentId);
+      if (parentsChain) {
+        // Раскрыть всех родителей, чтобы комментарий был видим
+        setExpandedComments((prev) => {
+          const newSet = new Set(prev);
+          parentsChain.forEach((id) => newSet.add(id));
+          return newSet;
+        });
+      }
+
+      // Немного задержать прокрутку, чтобы React успел отрендерить раскрытые ответы
+      setTimeout(() => {
+        const el = document.getElementById(`comment-${commentId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          el.classList.add("highlight-comment");
+          setTimeout(() => {
+            el.classList.remove("highlight-comment");
+          }, 10000);
+        }
+      }, 200); // задержка 200мс - можно регулировать, чтобы точно успело отрендериться
+    }
+  }, [comments, scrollHash]);
 
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
@@ -197,6 +247,7 @@ const TaskForum = ({
     list.map((comment) => (
       <div
         key={comment._id}
+        id={`comment-${comment._id}`}
         className="forum-comment"
         style={{
           ...(depth !== 0 && { marginLeft: 20 }),

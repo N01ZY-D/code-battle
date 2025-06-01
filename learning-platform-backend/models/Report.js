@@ -23,6 +23,17 @@ const reportSchema = new Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+
+  relatedTaskId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Task",
+    default: null,
+  },
+  relatedTheoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Theory",
+    default: null,
+  },
 });
 
 module.exports = mongoose.model("Report", reportSchema);
