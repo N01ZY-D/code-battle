@@ -9,6 +9,7 @@ const profileRoutes = require("./routes/profileRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const categoryOrderRoutes = require("./routes/categoryOrder.js");
 const commentRoutes = require("./routes/commentRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 dotenv.config();
 connectDB();
@@ -33,6 +34,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/category-order", categoryOrderRoutes); // Добавляем маршруты для порядка категорий
 app.use("/api/comments", commentRoutes); // Добавляем маршруты для комментариев
+app.use("/api/reports", reportRoutes); // Добавляем маршруты для отчетов
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

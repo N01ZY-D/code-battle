@@ -8,6 +8,7 @@ import { FiEdit } from "react-icons/fi";
 import AuthContext from "../context/AuthContext";
 import ContentContext from "../context/ContentContext";
 import TaskForum from "../components/TaskForum";
+import ReportButton from "../components/ReportButton"; // Импортируем кнопку жалобы
 
 const TheoryPage = () => {
   const { slug } = useParams();
@@ -78,6 +79,8 @@ const TheoryPage = () => {
             <Link to="/theory">
               <button>Назад к списку теорий</button>
             </Link>
+            <ReportButton entityId={theory._id} entityType="theory" />
+
             {user && user.role === "admin" && (
               <Link to={`/theories/edit/${theory.slug}`}>
                 <button>

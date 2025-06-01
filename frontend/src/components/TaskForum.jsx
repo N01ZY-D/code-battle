@@ -10,6 +10,7 @@ import {
   FiCornerDownRight,
 } from "react-icons/fi";
 import "./taskForum.css";
+import ReportButton from "../components/ReportButton";
 
 const TaskForum = ({
   taskId,
@@ -264,6 +265,7 @@ const TaskForum = ({
           <button onClick={() => sendReaction(comment._id, "dislike")}>
             <FiThumbsDown /> {comment.dislikes?.length || 0}
           </button>
+          <ReportButton entityId={comment._id} entityType="comment" />
         </div>
 
         {comment.replies?.length > 0 && (

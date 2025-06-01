@@ -7,6 +7,7 @@ import Editor, { loader } from "@monaco-editor/react";
 import AuthContext from "../context/AuthContext"; // Импортируем AuthContext
 import "../styles/taskPage.css";
 import TaskForum from "../components/TaskForum";
+import ReportButton from "../components/ReportButton"; // Импортируем кнопку жалобы
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -136,6 +137,7 @@ const TaskPage = () => {
         <Link to="/tasks">
           <button>Назад к списку задач</button>
         </Link>
+        <ReportButton entityId={task._id} entityType="task" />
         {user && user.role === "admin" && (
           <Link to={`/tasks/edit/${task._id}`}>
             <button>

@@ -2,10 +2,12 @@ const Report = require("../models/Report");
 
 const createReport = async (req, res) => {
   try {
+    console.log("Request body:", req.body);
+
     const { targetType, targetId, reason } = req.body;
 
     const report = await Report.create({
-      reporterId: req.user._id,
+      reporterId: req.user.id,
       targetType,
       targetId,
       reason,
