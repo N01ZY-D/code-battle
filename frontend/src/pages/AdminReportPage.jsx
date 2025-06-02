@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
-import "../styles/AdminReportPage.css";
+import "../styles/adminReportPage.css";
 
 const AdminReportPage = () => {
   const { token, user } = useContext(AuthContext);
