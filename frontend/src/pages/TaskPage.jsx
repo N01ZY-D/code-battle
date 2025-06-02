@@ -141,7 +141,7 @@ const TaskPage = () => {
         {user && user.role === "admin" && (
           <Link to={`/tasks/edit/${task._id}`}>
             <button>
-              <FiEdit size={18} />
+              <FiEdit size={20} />
             </button>
           </Link>
         )}

@@ -84,7 +84,7 @@ const TheoryPage = () => {
             {user && user.role === "admin" && (
               <Link to={`/theories/edit/${theory.slug}`}>
                 <button>
-                  <FiEdit size={18} />
+                  <FiEdit size={20} />
                 </button>
               </Link>
             )}
