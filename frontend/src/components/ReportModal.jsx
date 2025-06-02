@@ -2,7 +2,6 @@ import { useState, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import "./reportModal.css";
-import { FiFlag } from "react-icons/fi";
 
 const ReportModal = ({ onClose, entityId, entityType }) => {
   const [reason, setReason] = useState("");
