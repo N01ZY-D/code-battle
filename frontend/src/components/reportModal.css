@@ -1,0 +1,114 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #344756;
+  padding: 24px 28px;
+  border-radius: 8px;
+  width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+.modal h3 {
+  margin: 0 0 16px 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: white;
+}
+
+.modal label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: white;
+}
+
+.modal select,
+.modal textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  outline-offset: 2px;
+  transition: border-color 0.25s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.modal select:focus,
+.modal textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+}
+
+.modal textarea {
+  min-height: 80px;
+  max-height: 160px;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-actions button {
+  padding: 8px 18px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  min-width: 90px;
+  font-family: inherit;
+}
+
+.modal-actions button:disabled {
+  cursor: not-allowed;
+  background-color: #b3b3b3 !important;
+  color: #eee;
+  box-shadow: none;
+}
+
+.modal-actions button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-actions button:first-child:hover:not(:disabled) {
+  background-color: #0056b3;
+  box-shadow: 0 0 8px rgba(0, 86, 179, 0.6);
+}
+
+.modal-actions button:last-child {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.modal-actions button:last-child:hover:not(:disabled) {
+  background-color: #bdbdbd;
+}
+
+/* Ошибка */
+.modal p {
+  margin: 6px 0 0 0;
+  font-size: 0.85rem;
+  color: #d32f2f;
+}
