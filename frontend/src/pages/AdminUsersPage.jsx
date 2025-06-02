@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/AdminUsersPage.css"; // Импортируем стили для страницы администрирования пользователей
+import "../styles/adminUsersPage.css"; // Импортируем стили для страницы администрирования пользователей
 import Avatar from "../components/Avatar";
 
 const AdminUsersPage = () => {
