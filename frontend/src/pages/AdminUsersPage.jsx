@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/AdminUsersPage.css"; // Импортируем стили для страницы администрирования пользователей
+import Avatar from "../components/Avatar";
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -107,15 +108,27 @@ const AdminUsersPage = () => {
       {users.map((user) => (
         <div key={user._id} className="user-card">
           <div className="user-header">
-            <div>
-              <p className="user-nickname">{user.nickname}</p>
-              <p className="user-email">{user.email}</p>
-              <p className="user-role">Роль: {user.role}</p>
+            <div className="user-info">
+              <div className="avatar-wrapper">
+                <Avatar
+                  matrix={user.avatarMatrix}
+                  color={user.avatarColor}
+                  size={60}
+                />
+              </div>
+              <div>
+                <p className="user-nickname">{user.nickname}</p>
+                <p className="user-role">Роль: {user.role}</p>
+                <p className="user-email">{user.email}</p>
+              </div>
             </div>
+
             <div className="user-actions">
               <button
                 onClick={() => {
                   setEditingRoleId(user._id);
+                  setEditingNicknameId(null);
+                  setViewingSolutionsId(null);
                   setNewRole(user.role);
                 }}
               >
@@ -124,14 +137,24 @@ const AdminUsersPage = () => {
               <button
                 onClick={() => {
                   setEditingNicknameId(user._id);
+                  setEditingRoleId(null);
+                  setViewingSolutionsId(null);
                   setNewNickname(user.nickname);
                 }}
               >
                 Изм. ник
               </button>
-              <button onClick={() => handleViewSolutions(user._id)}>
+
+              <button
+                onClick={() => {
+                  handleViewSolutions(user._id);
+                  setEditingRoleId(null);
+                  setEditingNicknameId(null);
+                }}
+              >
                 Решения
               </button>
+
               <button className="danger" onClick={() => handleDelete(user._id)}>
                 Удалить
               </button>

@@ -1,13 +1,16 @@
 .admin-users-page {
+  background-color: #2c2f36;
   max-width: 800px;
-  margin: 0 auto;
-  padding: 24px;
+  margin: 100px 40px 40px;
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .admin-title {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .admin-loading {
@@ -16,8 +19,7 @@
 }
 
 .user-card {
-  background: #2d2f34;
-  border: 1px solid #ccc;
+  background: #344756;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
@@ -25,8 +27,17 @@
 
 .user-header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .user-nickname {
