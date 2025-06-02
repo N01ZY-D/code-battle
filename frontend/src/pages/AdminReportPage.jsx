@@ -2,13 +2,14 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
-import "../styles/AdminReportPage.css"; // подключи стили
+import "../styles/AdminReportPage.css";
 
 const AdminReportPage = () => {
   const { token, user } = useContext(AuthContext);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("open");
+  const [openReportId, setOpenReportId] = useState(null);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -47,27 +48,19 @@ const AdminReportPage = () => {
     }
   };
 
-  if (loading) return <p>Загрузка...</p>;
-  if (user?.role !== "admin") return <p>Доступ запрещён</p>;
-
   const getLinkForTarget = (type, id) => {
     switch (type) {
       case "task":
         return `/tasks/${id}`;
       case "theory":
         return `/theory/${id}`;
-      case "comment":
-        return null;
       default:
         return null;
     }
   };
 
-  const statusColors = {
-    open: "gray",
-    reviewed: "green",
-    rejected: "red",
-  };
+  if (loading) return <p>Загрузка...</p>;
+  if (user?.role !== "admin") return <p>Доступ запрещён</p>;
 
   const visibleReports =
     statusFilter === "all"
@@ -77,46 +70,66 @@ const AdminReportPage = () => {
   return (
     <div className="admin-report-container">
       <h2 className="admin-report-title">Жалобы пользователей</h2>
-      {reports.length === 0 ? (
-        <p className="no-reports">Жалоб пока нет</p>
-      ) : (
-        <>
-          <div className="status-filter">
-            <label htmlFor="statusSelect">Показать жалобы со статусом: </label>
-            <select
-              className="status-select"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="open">На рассмотрении</option>
-              <option value="reviewed">Рассмотренные</option>
-              <option value="rejected">Отклонённые</option>
-              <option value="all">Все</option>
-            </select>
-          </div>
 
-          <table className="admin-report-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Тип</th>
-                <th>Цель</th>
-                <th>Причина</th>
-                <th>Комментарий</th>
-                <th>Автор</th>
-                <th>Дата</th>
-                <th>Статус</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleReports.map((r) => {
-                const link = getLinkForTarget(r.targetType, r.targetId);
-                return (
-                  <tr key={r._id}>
-                    <td className="monospace">{r._id.slice(-6)}</td>
-                    <td>{r.targetType}</td>
-                    <td>
+      <div className="status-filter">
+        <label htmlFor="statusSelect">Показать жалобы со статусом: </label>
+        <select
+          className="status-select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="open">На рассмотрении</option>
+          <option value="reviewed">Рассмотренные</option>
+          <option value="rejected">Отклонённые</option>
+          <option value="all">Все</option>
+        </select>
+      </div>
+
+      {visibleReports.length === 0 ? (
+        <p className="no-reports">Жалоб нет</p>
+      ) : (
+        <div className="report-list">
+          {visibleReports.map((r) => {
+            const link = getLinkForTarget(r.targetType, r.targetId);
+            const isOpen = openReportId === r._id;
+            return (
+              <div key={r._id} className="report-card">
+                <div
+                  className="report-header"
+                  onClick={() => setOpenReportId(isOpen ? null : r._id)}
+                >
+                  <span className="monospace">#{r._id.slice(-6)}</span>
+                  <span>{r.targetType}</span>
+                  <span>
+                    {r.reporterId?.nickname || r.reporterId?.email || "—"}
+                  </span>
+                  <span className={`status-cell ${r.status}`}>
+                    {r.status === "open"
+                      ? "На рассмотрении"
+                      : r.status === "reviewed"
+                      ? "Рассмотрена"
+                      : "Отклонена"}
+                  </span>
+                  <button className="toggle-details">
+                    {isOpen ? "▲" : "▼"}
+                  </button>
+                </div>
+
+                {isOpen && (
+                  <div className="report-details">
+                    <p>
+                      <strong>Причина:</strong> {r.reason}
+                    </p>
+                    <p>
+                      <strong>Комментарий:</strong>{" "}
+                      {r.description || <em className="dimmed">—</em>}
+                    </p>
+                    <p>
+                      <strong>Дата:</strong>{" "}
+                      {new Date(r.createdAt).toLocaleString()}
+                    </p>
+                    <p>
+                      <strong>Цель:</strong>{" "}
                       {r.targetType === "comment" ? (
                         <>
                           {r.relatedTaskId && (
@@ -129,7 +142,7 @@ const AdminReportPage = () => {
                               Коммент. (задача)
                             </a>
                           )}
-                          {r.relatedTheoryId && r.relatedTheorySlug && (
+                          {r.relatedTheorySlug && (
                             <a
                               href={`/theory/${r.relatedTheorySlug}#comment-${r.targetId}`}
                               className="go-to-button"
@@ -139,7 +152,7 @@ const AdminReportPage = () => {
                               Коммент. (теория)
                             </a>
                           )}
-                          {!r.relatedTaskId && !r.relatedTheoryId && (
+                          {!r.relatedTaskId && !r.relatedTheorySlug && (
                             <span className="dimmed">Комментарий</span>
                           )}
                         </>
@@ -154,20 +167,9 @@ const AdminReportPage = () => {
                       ) : (
                         <span className="dimmed">—</span>
                       )}
-                    </td>
-                    <td>{r.reason}</td>
-                    <td>{r.description || <em className="dimmed">—</em>}</td>
-                    <td>{r.reporterId?.nickname || r.reporterId?.email}</td>
-                    <td>{new Date(r.createdAt).toLocaleString()}</td>
-                    <td className={`status-cell ${r.status}`}>
-                      {r.status === "open"
-                        ? "На рассмотрении"
-                        : r.status === "reviewed"
-                        ? "Рассмотрена"
-                        : "Отклонена"}
-                    </td>
-
-                    <td>
+                    </p>
+                    <div className="status-action">
+                      <label>Изменить статус:</label>
                       <select
                         className="status-select"
                         value={r.status}
@@ -179,13 +181,13 @@ const AdminReportPage = () => {
                         <option value="reviewed">Рассмотрена</option>
                         <option value="rejected">Отклонена</option>
                       </select>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
