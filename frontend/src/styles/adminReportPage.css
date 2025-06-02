@@ -48,6 +48,7 @@
   border-radius: 6px;
   border: none;
   background-color: #1f2833;
+  border: 1px solid #1f2833;
   color: white;
   font-size: 14px;
   cursor: pointer;
@@ -117,7 +118,6 @@
   padding: 5px;
   border-radius: 8px;
   margin-bottom: 5px;
-
   display: flex;
   flex-direction: row;
   align-items: center;
