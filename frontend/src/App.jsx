@@ -21,6 +21,7 @@ import EditTheoryPage from "./pages/EditTheoryPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminReportPage from "./pages/AdminReportPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
 import PrivateRoute from "./components/PrivateRoute";
 
 import { ContentProvider } from "./context/ContentContext";
@@ -134,6 +135,15 @@ const AppContent = () => {
             element={
               <PrivateRoute>
                 <AdminReportPage /> {/* Страница отчетов для администраторов */}
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/adminUsers"
+            element={
+              <PrivateRoute>
+                <AdminUsersPage />{" "}
+                {/* Страница пользователей для администраторов */}
               </PrivateRoute>
             }
           />

@@ -18,9 +18,14 @@ const DashboardPage = () => {
           <button>Перейти к заданиям</button>
         </Link>
         {user && user.role === "admin" && (
-          <Link to="/reports" className="dashboard-button">
-            <button>Перейти к жалобам</button>
-          </Link>
+          <>
+            <Link to="/reports" className="dashboard-button">
+              <button>Перейти к жалобам</button>
+            </Link>
+            <Link to="/adminUsers" className="dashboard-button">
+              <button>Перейти к пользователям</button>
+            </Link>
+          </>
         )}
       </div>
     </div>
