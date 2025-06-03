@@ -1,35 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Avatar from "./Avatar";
+import AuthContext from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, token } = useContext(AuthContext);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) return;
 
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+  //     try {
+  //       const response = await fetch(
+  //         `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/auth/me`,
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки данных пользователя:", error);
-      }
-    };
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setUser(data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Ошибка загрузки данных пользователя:", error);
+  //     }
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

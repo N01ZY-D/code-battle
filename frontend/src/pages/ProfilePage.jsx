@@ -1,40 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "../components/Avatar";
 import axios from "axios";
+import AuthContext from "../context/AuthContext";
 import "../styles/profilePage.css";
 
 const ProfilePage = () => {
-  const [user, setUser] = useState(null);
+  const { user, login } = useContext(AuthContext);
+  const [solutions, setSolutions] = useState([]);
+  const [solvedTasksCount, setSolvedTasksCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [newNickname, setNewNickname] = useState("");
   const [newAvatar, setNewAvatar] = useState("");
-  const [expandedTasks, setExpandedTasks] = useState({}); // хранит состояния открытых блоков
+  const [expandedTasks, setExpandedTasks] = useState({});
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchStats = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
+        const res = await axios.get(
+          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile/stats`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
-        setUser(response.data);
-        setLoading(false);
+        setSolutions(res.data.solutions || []);
+        setSolvedTasksCount(res.data.solvedTasksCount || 0);
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Ошибка загрузки статистики:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchStats();
   }, []);
 
   const handleUpdateProfile = async () => {
     try {
-      const response = await axios.put(
+      const res = await axios.put(
         `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/profile`,
         {
           nickname: newNickname || user.nickname,
@@ -46,13 +51,13 @@ const ProfilePage = () => {
           },
         }
       );
-      setUser(response.data.user);
+      // Обновляем контекст пользователя
+      login(localStorage.getItem("token"));
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Ошибка обновления профиля:", error);
     }
   };
 
-  // Группировка решений по задаче
   const groupSolutionsByTask = (solutions) => {
     const grouped = {};
     solutions.forEach((sol) => {
@@ -75,9 +80,9 @@ const ProfilePage = () => {
     }));
   };
 
-  if (loading) return <div>Загрузка...</div>;
+  if (!user || loading) return <div>Загрузка...</div>;
 
-  const groupedSolutions = groupSolutionsByTask(user.solutions);
+  const groupedSolutions = groupSolutionsByTask(solutions);
 
   return (
     <div>
@@ -120,9 +125,9 @@ const ProfilePage = () => {
 
         <div className="profile-right">
           <h3 className="profile-section-title">
-            Решения задач (уникальных задач решено: {user.solvedTasksCount})
+            Решения задач (уникальных задач решено: {solvedTasksCount})
           </h3>
-          {user?.solutions?.length > 0 ? (
+          {solutions.length > 0 ? (
             <div className="solutions-accordion">
               {Object.entries(groupedSolutions).map(([taskId, taskData]) => (
                 <div key={taskId} className="accordion-task-block">

@@ -41,6 +41,28 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const getUserStats = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select("solvedTasksCount solutions")
+      .populate({
+        path: "solutions.taskId",
+        select: "title",
+      });
+
+    if (!user) {
+      return res.status(404).json({ message: "Пользователь не найден" });
+    }
+
+    res.json({
+      solvedTasksCount: user.solvedTasksCount,
+      solutions: user.solutions || [],
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+};
+
 const getAllUsers = async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Доступ запрещён" });
@@ -152,4 +174,5 @@ module.exports = {
   deleteUser,
   updateUserNickname,
   getUserSolutions,
+  getUserStats,
 };
