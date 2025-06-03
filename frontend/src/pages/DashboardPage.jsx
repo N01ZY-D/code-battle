@@ -9,7 +9,9 @@ const DashboardPage = () => {
   return (
     <div className="dashboard-container">
       <h1 className="dashboard-title">Добро пожаловать!</h1>
-      <p className="dashboard-description">Выберите, что хотите изучать:</p>
+      <p className="dashboard-description">
+        Выберите, что хотите изучать из языка JavaScript:
+      </p>
       <div className="dashboard-buttons">
         <Link to="/theory" className="dashboard-button">
           <button>Перейти к теории</button>
@@ -21,7 +23,10 @@ const DashboardPage = () => {
       <div className="admin-buttons">
         {user && user.role === "admin" && (
           <>
-            <p>Администратор {user.nickname}, с чем хотите работать?</p>
+            <p>
+              Администратор <strong>{user.nickname}</strong>, с чем хотите
+              работать?
+            </p>
             <div className="dashboard-buttons">
               <Link to="/reports" className="dashboard-button">
                 <button>Перейти к жалобам</button>
