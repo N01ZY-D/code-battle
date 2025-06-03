@@ -51,8 +51,10 @@ const ProfilePage = () => {
           },
         }
       );
+
       // Обновляем контекст пользователя
       login(localStorage.getItem("token"));
+      setNewNickname("");
     } catch (error) {
       console.error("Ошибка обновления профиля:", error);
     }
