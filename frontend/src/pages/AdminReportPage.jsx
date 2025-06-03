@@ -1,4 +1,5 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext, useMemo, useState } from "react";
+import useSWR from "swr";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
@@ -6,43 +7,30 @@ import "../styles/adminReportPage.css";
 
 const AdminReportPage = () => {
   const { token, user } = useContext(AuthContext);
-  const [reports, setReports] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("open");
   const [openReportId, setOpenReportId] = useState(null);
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/reports`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setReports(res.data);
-      } catch (err) {
-        console.error("Ошибка при загрузке жалоб:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const BASE_URL = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
+  const fetcher = (url) =>
+    axios
+      .get(url, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.data);
 
-    fetchReports();
-  }, [token]);
+  const {
+    data: reports = [],
+    isLoading,
+    error,
+    mutate,
+  } = useSWR(token ? `${BASE_URL}/api/reports` : null, fetcher);
 
   const handleStatusChange = async (reportId, newStatus) => {
     try {
       const res = await axios.put(
-        `${
-          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
-        }/api/reports/${reportId}`,
+        `${BASE_URL}/api/reports/${reportId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setReports((prev) =>
-        prev.map((r) => (r._id === reportId ? res.data : r))
-      );
+      mutate(); // Обновляем данные
     } catch (err) {
       console.error("Ошибка при обновлении статуса:", err);
     }
@@ -59,13 +47,15 @@ const AdminReportPage = () => {
     }
   };
 
-  if (loading) return <p>Загрузка...</p>;
-  if (user?.role !== "admin") return <p>Доступ запрещён</p>;
-
-  const visibleReports =
-    statusFilter === "all"
+  const visibleReports = useMemo(() => {
+    return statusFilter === "all"
       ? reports
       : reports.filter((r) => r.status === statusFilter);
+  }, [reports, statusFilter]);
+
+  if (isLoading) return <p>Загрузка...</p>;
+  if (error) return <p>Ошибка загрузки данных</p>;
+  if (user?.role !== "admin") return <p>Доступ запрещён</p>;
 
   return (
     <div className="admin-report-container">
