@@ -140,6 +140,12 @@ const TheoryListPage = () => {
     <div className="theory-list-page">
       <h1 className="theory-list-page__title">Выберите раздел теории</h1>
       <div className="theory-list-page__content">
+        <button
+          className="theory-list-page__back-button"
+          onClick={handleBackToDashboard}
+        >
+          Вернуться в Dashboard
+        </button>
         {nonEmptyCategories.map((category, index) => (
           <div key={category} className="theory-list-page__category">
             <div className="theory-list-page__category-header">

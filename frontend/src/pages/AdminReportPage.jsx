@@ -70,7 +70,16 @@ const AdminReportPage = () => {
   return (
     <div className="admin-report-container">
       <h2 className="admin-report-title">Жалобы пользователей</h2>
-
+      <div className="back-to-dashboard">
+        <Link to="/dashboard">
+          <button
+            className="back-button"
+            style={{ backgroundColor: "#cd853f" }}
+          >
+            Вернуться в Dashboard
+          </button>
+        </Link>
+      </div>
       <div className="status-filter">
         <label htmlFor="statusSelect">Показать жалобы со статусом: </label>
         <select

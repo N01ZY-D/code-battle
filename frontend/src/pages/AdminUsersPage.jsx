@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/adminUsersPage.css"; // Импортируем стили для страницы администрирования пользователей
 import Avatar from "../components/Avatar";
@@ -104,7 +105,16 @@ const AdminUsersPage = () => {
   return (
     <div className="admin-users-page">
       <h1 className="admin-title">Управление пользователями</h1>
-
+      <div className="back-to-dashboard">
+        <Link to="/dashboard">
+          <button
+            className="back-button"
+            style={{ backgroundColor: "#cd853f" }}
+          >
+            Вернуться в Dashboard
+          </button>
+        </Link>
+      </div>
       {users.map((user) => (
         <div key={user._id} className="user-card">
           <div className="user-header">

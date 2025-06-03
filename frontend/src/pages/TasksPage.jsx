@@ -81,6 +81,12 @@ const TasksPage = () => {
     <div className="tasks-page">
       <h1 className="tasks-page__title">Выберите задание</h1>
       <div className="tasks-page__content">
+        <button
+          className="tasks-page__back-button"
+          onClick={handleBackToDashboard}
+        >
+          Вернуться в Dashboard
+        </button>
         {tasks.length === 0 ? (
           <p className="tasks-page__no-tasks">Нет доступных заданий</p>
         ) : (

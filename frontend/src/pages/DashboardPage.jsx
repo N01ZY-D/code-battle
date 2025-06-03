@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-//import AdminReportPage from "./AdminReportPage";
 
 const DashboardPage = () => {
   const { user, token } = useContext(AuthContext);

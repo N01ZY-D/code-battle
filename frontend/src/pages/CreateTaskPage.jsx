@@ -110,6 +110,16 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
       <h2 className="page-title">
         {mode === "edit" ? "Редактирование задачи" : "Создание новой задачи"}
       </h2>
+      <div className="back-to-dashboard">
+        <Link to="/dashboard">
+          <button
+            className="back-button"
+            style={{ backgroundColor: "#cd853f" }}
+          >
+            Вернуться в Dashboard
+          </button>
+        </Link>
+      </div>
       <form className="task-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">Название</label>

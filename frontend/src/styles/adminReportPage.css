@@ -142,3 +142,13 @@
   opacity: 0.6;
   font-style: italic;
 }
+
+.back-to-dashboard {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.back-button {
+  flex: 0 0 100%;
+}
