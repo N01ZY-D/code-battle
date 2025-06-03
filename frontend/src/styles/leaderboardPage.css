@@ -77,4 +77,9 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.leaderboard-back-button:hover {
+  background-color: #004c9e;
 }
