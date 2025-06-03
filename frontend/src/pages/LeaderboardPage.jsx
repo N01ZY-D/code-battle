@@ -30,7 +30,9 @@ const LeaderboardPage = () => {
       <h2 className="leaderboard-title">Таблица лидеров</h2>
       <div className="leaderboard-back-button-container">
         <Link to="/dashboard">
-          <button className="back-button">Вернуться в Dashboard</button>
+          <button className="leaderboard-back-button">
+            Вернуться в Dashboard
+          </button>
         </Link>
       </div>
 
