@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Avatar from "./Avatar";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -31,39 +32,59 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Удаляем токен
-    navigate("/"); // Перенаправляем на главную
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   return (
-    <nav className="navbar">
-      {/* {user && user.role === "admin" && (
-        <div className="admin-panel">
-          <span className="admin-badge">Admin</span>
-          <Link to="/create-task" className="create-task-btn">
-            <button>Новая Задача</button>
-          </Link>
-          <Link to="/create-theory" className="create-theory-btn">
-            <button>Новая Теория</button>
-          </Link>
-        </div>
-      )} */}
+    <nav
+      className="navbar"
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0.5rem 1rem",
+      }}
+    >
       {user && (
-        <div className="user-links">
-          <Link to="/dashboard" className="dashboard-btn">
-            <button>На главную</button>
+        <div
+          className="user-links"
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: "50%",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Avatar
+              matrix={user.avatarMatrix}
+              color={user.avatarColor}
+              size={60}
+            />
+          </div>
+          <Link to="/dashboard">
+            <button className="nav-button">На главную</button>
           </Link>
-          <Link to="/profile" className="profile-btn">
-            <button>Профиль</button>
+          <Link to="/profile">
+            <button className="nav-button">Профиль</button>
           </Link>
-          <Link to="/leaderboard" className="leaderboard-btn">
-            <button>Таблица Лидеров</button>
+          <Link to="/leaderboard">
+            <button className="nav-button">Таблица Лидеров</button>
           </Link>
         </div>
       )}
-      <button onClick={handleLogout} className="logout-btn">
-        Выйти
-      </button>
+
+      {user && (
+        <button onClick={handleLogout} className="nav-button exit">
+          Выйти
+        </button>
+      )}
     </nav>
   );
 };
