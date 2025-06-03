@@ -37,7 +37,7 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      {user && user.role === "admin" && (
+      {/* {user && user.role === "admin" && (
         <div className="admin-panel">
           <span className="admin-badge">Admin</span>
           <Link to="/create-task" className="create-task-btn">
@@ -47,7 +47,7 @@ const Navbar = () => {
             <button>Новая Теория</button>
           </Link>
         </div>
-      )}
+      )} */}
       {user && (
         <div className="user-links">
           <Link to="/dashboard" className="dashboard-btn">
