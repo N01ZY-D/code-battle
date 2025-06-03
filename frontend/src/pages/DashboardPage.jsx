@@ -23,8 +23,8 @@ const DashboardPage = () => {
         {user && user.role === "admin" && (
           <>
             <p>
-              Администратор <strong>{user.nickname}</strong>, с чем хотите
-              работать?
+              Администратор <strong>{user.nickname}</strong>, чем хотите
+              заняться?
             </p>
             <div className="dashboard-buttons">
               <Link to="/reports" className="dashboard-button">
