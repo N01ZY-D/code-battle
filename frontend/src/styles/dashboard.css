@@ -41,3 +41,22 @@
 .dashboard-button button:hover {
   background-color: #344756;
 }
+
+.admin-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: center;
+}
+
+.admin-panel {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+}
+
+.admin-panel button {
+  flex: 0 0 48%; /* Каждая кнопка будет занимать 48% ширины */
+}

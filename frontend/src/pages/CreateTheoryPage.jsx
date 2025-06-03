@@ -109,6 +109,16 @@ const CreateTheoryPage = ({ slug, initialData }) => {
         {slug ? "Редактирование теории" : "Создание новой теории"}
       </h2>
       <form className="theory-form" onSubmit={handleSubmit}>
+        <div className="back-to-dashboard">
+          <Link to="/dashboard">
+            <button
+              className="back-button"
+              style={{ backgroundColor: "#cd853f" }}
+            >
+              Вернуться в Dashboard
+            </button>
+          </Link>
+        </div>
         <div className="form-group">
           <label htmlFor="title">Название</label>
           <input
