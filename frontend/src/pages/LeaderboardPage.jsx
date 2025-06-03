@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Avatar from "../components/Avatar";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import "../styles/leaderboardPage.css"; // Импортируем стили для страницы таблицы лидеров
 
 const LeaderboardPage = () => {
@@ -27,6 +28,12 @@ const LeaderboardPage = () => {
   return (
     <div className="leaderboard-container">
       <h2 className="leaderboard-title">Таблица лидеров</h2>
+      <div className="leaderboard-back-button-container">
+        <Link to="/dashboard">
+          <button className="back-button">Вернуться в Dashboard</button>
+        </Link>
+      </div>
+
       <table className="leaderboard-table">
         <thead>
           <tr>

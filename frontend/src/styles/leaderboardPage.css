@@ -62,3 +62,19 @@
   justify-content: center;
   align-items: center;
 }
+
+.leaderboard-back-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 10px;
+}
+
+.back-button {
+  background-color: #cd853f;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

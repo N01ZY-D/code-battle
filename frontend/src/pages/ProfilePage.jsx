@@ -81,14 +81,9 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <div className="back-to-dashboard">
+      <div className="back-button-container">
         <Link to="/dashboard">
-          <button
-            className="back-button"
-            style={{ backgroundColor: "#cd853f", marginTop: "100px" }}
-          >
-            Вернуться в Dashboard
-          </button>
+          <button className="back-button">Вернуться в Dashboard</button>
         </Link>
       </div>
       <div className="profile-container">

@@ -215,3 +215,24 @@
   color: #bebebe;
   margin: 0;
 }
+
+.back-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 100px 0 10px;
+}
+
+.back-button {
+  background-color: #cd853f;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #b06e33;
+}
