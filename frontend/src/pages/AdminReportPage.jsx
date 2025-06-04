@@ -1,52 +1,26 @@
-import { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import { useContext, useMemo, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { useReports } from "../hooks/useReports";
 import "../styles/adminReportPage.css";
 
 const AdminReportPage = () => {
   const { token, user } = useContext(AuthContext);
-  const [reports, setReports] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("open");
   const [openReportId, setOpenReportId] = useState(null);
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/reports`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setReports(res.data);
-      } catch (err) {
-        console.error("Ошибка при загрузке жалоб:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const {
+    data: reports = [],
+    isLoading,
+    error,
+    updateReportStatus,
+  } = useReports(token);
 
-    fetchReports();
-  }, [token]);
-
-  const handleStatusChange = async (reportId, newStatus) => {
-    try {
-      const res = await axios.put(
-        `${
-          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL
-        }/api/reports/${reportId}`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setReports((prev) =>
-        prev.map((r) => (r._id === reportId ? res.data : r))
-      );
-    } catch (err) {
-      console.error("Ошибка при обновлении статуса:", err);
-    }
-  };
+  const visibleReports = useMemo(() => {
+    return statusFilter === "all"
+      ? reports
+      : reports.filter((r) => r.status === statusFilter);
+  }, [reports, statusFilter]);
 
   const getLinkForTarget = (type, id) => {
     switch (type) {
@@ -59,13 +33,9 @@ const AdminReportPage = () => {
     }
   };
 
-  if (loading) return <p>Загрузка...</p>;
+  if (isLoading) return <p>Загрузка...</p>;
+  if (error) return <p>Ошибка загрузки данных</p>;
   if (user?.role !== "admin") return <p>Доступ запрещён</p>;
-
-  const visibleReports =
-    statusFilter === "all"
-      ? reports
-      : reports.filter((r) => r.status === statusFilter);
 
   return (
     <div className="admin-report-container">
@@ -183,7 +153,7 @@ const AdminReportPage = () => {
                         className="status-select"
                         value={r.status}
                         onChange={(e) =>
-                          handleStatusChange(r._id, e.target.value)
+                          updateReportStatus(r._id, e.target.value)
                         }
                       >
                         <option value="open">На рассмотрении</option>

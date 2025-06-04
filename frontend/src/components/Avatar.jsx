@@ -4,9 +4,6 @@ const Avatar = ({ matrix, color, size = 48 }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    console.log("Avatar component received matrix:", matrix);
-    console.log("Avatar component received color:", color);
-
     if (
       !Array.isArray(matrix) ||
       matrix.length !== 12 ||
