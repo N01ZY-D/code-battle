@@ -89,16 +89,42 @@ const updateUserRole = async (req, res) => {
   }
 
   try {
-    const user = await User.findByIdAndUpdate(
-      id,
-      { role },
-      { new: true }
-    ).select("-password");
-    if (!user)
+    const userToUpdate = await User.findById(id);
+    if (!userToUpdate) {
       return res.status(404).json({ message: "Пользователь не найден" });
+    }
 
-    res.json({ message: "Роль обновлена", user });
+    // Супер-админ — email из env, его роль менять нельзя
+    if (userToUpdate.email === process.env.SUPER_ADMIN_EMAIL) {
+      return res
+        .status(403)
+        .json({ message: "Нельзя изменить роль супер-админа" });
+    }
+
+    // Если пытаемся понизить роль с admin до user,
+    // нужно проверить, что это не последний админ в базе
+    if (userToUpdate.role === "admin" && role !== "admin") {
+      const adminsCount = await User.countDocuments({ role: "admin" });
+
+      // Если админов всего 1, запрещаем понижение роли
+      if (adminsCount <= 1) {
+        return res.status(400).json({
+          message:
+            "Нельзя понизить роль. В базе должен оставаться хотя бы один админ.",
+        });
+      }
+    }
+
+    // Всё прошло — обновляем роль
+    userToUpdate.role = role;
+    await userToUpdate.save();
+
+    const userSafe = userToUpdate.toObject();
+    delete userSafe.password;
+
+    res.json({ message: "Роль обновлена", user: userSafe });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
