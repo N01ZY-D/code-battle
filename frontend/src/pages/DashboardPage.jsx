@@ -1,9 +1,38 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import { usePendingReportsCount } from "../hooks/usePendingReportsCount";
 
 const DashboardPage = () => {
   const { user, token } = useContext(AuthContext);
+  const { data, error, isLoading } = usePendingReportsCount(token);
+
+  const pendingCount = data?.count || 0;
+
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/reports/count`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPendingCount(data.count);
+        } else {
+          console.error("Ошибка при получении количества жалоб");
+        }
+      } catch (err) {
+        console.error("Ошибка при загрузке количества жалоб:", err);
+      }
+    };
+
+    if (user?.role === "admin") {
+      fetchPendingCount();
+    }
+  }, [token, user]);
 
   return (
     <div className="dashboard-container">
@@ -28,7 +57,12 @@ const DashboardPage = () => {
             </p>
             <div className="dashboard-buttons">
               <Link to="/reports" className="dashboard-button">
-                <button>Перейти к жалобам</button>
+                <button>
+                  Перейти к жалобам
+                  {pendingCount > 0 && (
+                    <span className="notification-badge">{pendingCount}</span>
+                  )}
+                </button>
               </Link>
               <Link to="/adminUsers" className="dashboard-button">
                 <button>Перейти к пользователям</button>

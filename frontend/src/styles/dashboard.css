@@ -60,3 +60,13 @@
 .admin-panel button {
   flex: 0 0 48%; /* Каждая кнопка будет занимать 48% ширины */
 }
+
+.notification-badge {
+  background-color: #cd853f;
+  color: white;
+  font-weight: bold;
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  font-size: 0.8rem;
+}

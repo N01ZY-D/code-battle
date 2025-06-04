@@ -1,8 +1,7 @@
 import { useContext, useMemo, useState } from "react";
-import useSWR from "swr";
-import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { useReports } from "../hooks/useReports";
 import "../styles/adminReportPage.css";
 
 const AdminReportPage = () => {
@@ -10,31 +9,18 @@ const AdminReportPage = () => {
   const [statusFilter, setStatusFilter] = useState("open");
   const [openReportId, setOpenReportId] = useState(null);
 
-  const BASE_URL = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
-  const fetcher = (url) =>
-    axios
-      .get(url, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.data);
-
   const {
     data: reports = [],
     isLoading,
     error,
-    mutate,
-  } = useSWR(token ? `${BASE_URL}/api/reports` : null, fetcher);
+    updateReportStatus,
+  } = useReports(token);
 
-  const handleStatusChange = async (reportId, newStatus) => {
-    try {
-      const res = await axios.put(
-        `${BASE_URL}/api/reports/${reportId}`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      mutate(); // Обновляем данные
-    } catch (err) {
-      console.error("Ошибка при обновлении статуса:", err);
-    }
-  };
+  const visibleReports = useMemo(() => {
+    return statusFilter === "all"
+      ? reports
+      : reports.filter((r) => r.status === statusFilter);
+  }, [reports, statusFilter]);
 
   const getLinkForTarget = (type, id) => {
     switch (type) {
@@ -46,12 +32,6 @@ const AdminReportPage = () => {
         return null;
     }
   };
-
-  const visibleReports = useMemo(() => {
-    return statusFilter === "all"
-      ? reports
-      : reports.filter((r) => r.status === statusFilter);
-  }, [reports, statusFilter]);
 
   if (isLoading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка загрузки данных</p>;
@@ -173,7 +153,7 @@ const AdminReportPage = () => {
                         className="status-select"
                         value={r.status}
                         onChange={(e) =>
-                          handleStatusChange(r._id, e.target.value)
+                          updateReportStatus(r._id, e.target.value)
                         }
                       >
                         <option value="open">На рассмотрении</option>

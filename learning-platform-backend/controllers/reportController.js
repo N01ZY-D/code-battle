@@ -112,4 +112,19 @@ const updateReportStatus = async (req, res) => {
   }
 };
 
-module.exports = { createReport, getAllReports, updateReportStatus };
+const getPendingReportsCount = async (req, res) => {
+  try {
+    const count = await Report.countDocuments({ status: "open" });
+    res.json({ count });
+  } catch (err) {
+    console.error("Ошибка при получении количества жалоб:", err);
+    res.status(500).json({ error: "Не удалось получить количество жалоб" });
+  }
+};
+
+module.exports = {
+  createReport,
+  getAllReports,
+  updateReportStatus,
+  getPendingReportsCount,
+};
