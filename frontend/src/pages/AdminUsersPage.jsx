@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import "../styles/adminUsersPage.css"; // Импортируем стили для страницы администрирования пользователей
+import "../styles/adminUsersPage.css";
 import Avatar from "../components/Avatar";
 
 const AdminUsersPage = () => {
@@ -13,6 +13,7 @@ const AdminUsersPage = () => {
   const [viewingSolutionsId, setViewingSolutionsId] = useState(null);
   const [solutions, setSolutions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [roleEditError, setRoleEditError] = useState(null); // состояние для ошибок смены роли
 
   const token = localStorage.getItem("token");
   const BASE_URL = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
@@ -64,7 +65,13 @@ const AdminUsersPage = () => {
       updateUserInState(res.data.user);
       setEditingRoleId(null);
     } catch (err) {
-      console.error("Ошибка при изменении роли:", err);
+      // Если сервер вернул ошибку с сообщением — показываем его
+      const errorMsg =
+        err.response?.data?.message ||
+        "Ошибка при изменении роли, попробуйте ещё раз";
+      alert(errorMsg);
+      // Закрываем меню редактирования роли
+      setEditingRoleId(null);
     }
   };
 
@@ -140,6 +147,7 @@ const AdminUsersPage = () => {
                   setEditingNicknameId(null);
                   setViewingSolutionsId(null);
                   setNewRole(user.role);
+                  setRoleEditError(null); // сбросить ошибку при открытии редактирования
                 }}
               >
                 Изм. роль
@@ -187,6 +195,9 @@ const AdminUsersPage = () => {
                 Сохранить
               </button>
               <button onClick={() => setEditingRoleId(null)}>Отмена</button>
+              {roleEditError && (
+                <p className="error-message">{roleEditError}</p>
+              )}
             </div>
           )}
 
