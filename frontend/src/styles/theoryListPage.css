@@ -122,3 +122,78 @@
 .tasks-page__back-button:hover {
   background-color: #0056b3;
 }
+
+/* Адаптивность для TheoryListPage */
+
+@media (max-width: 768px) {
+  .theory-list-page {
+    margin-top: 120px;
+  }
+
+  .theory-list-page__content {
+    padding: 15px;
+  }
+
+  .theory-list-page__category-header {
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .theory-list-page__category-title {
+    font-size: 20px;
+    margin: 8px 0;
+  }
+
+  .theory-list-page__item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .theory-list-page__button {
+    height: 45px;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  .theory-list-page__buttons {
+    justify-content: center;
+  }
+
+  .theory-list-page__back-button {
+    width: 100%;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .theory-list-page__title {
+    font-size: 20px;
+  }
+
+  .theory-list-page__category-title {
+    font-size: 18px;
+  }
+
+  .theory-list-page__item {
+    padding: 8px;
+  }
+
+  .theory-list-page__button {
+    font-size: 13px;
+    height: 40px;
+  }
+}
+
+/* Обеспечим кнопкам крупную область клика на мобильных */
+@media (hover: none) and (pointer: coarse) {
+  .theory-list-page__button,
+  .theory-list-page__move-button,
+  .theory-list-page__edit-button,
+  .theory-list-page__delete-button {
+    touch-action: manipulation;
+  }
+}
