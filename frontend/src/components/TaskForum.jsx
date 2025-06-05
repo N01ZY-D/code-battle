@@ -308,7 +308,8 @@ const TaskForum = ({
 
         <div className="comment-actions">
           <button onClick={() => setReplyTo(comment)} className="reply-btn">
-            <FiCornerDownRight /> Ответить
+            <FiCornerDownRight />
+            <span className="reply-text">Ответить</span>
           </button>
           <button onClick={() => sendReaction(comment._id, "like")}>
             <FiThumbsUp /> {comment.likes?.length || 0}

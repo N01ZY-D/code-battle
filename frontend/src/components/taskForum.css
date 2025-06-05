@@ -225,3 +225,92 @@
     background-color: transparent;
   }
 }
+
+@media (max-width: 768px) {
+  .forum-tabs {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .forum-tab {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .forum-form {
+    padding: 0 4px;
+  }
+
+  .solution-select label,
+  .solution-dropdown {
+    font-size: 14px;
+  }
+
+  .forum-textarea,
+  .edit-textarea {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .forum-submit {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .comment-header {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .comment-date {
+    font-size: 11px;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+
+  .delete-comment-btn,
+  .edit-comment-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .comment-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .code-block {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .forum-comment {
+    padding: 10px;
+  }
+
+  .edit-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .reply-indicator {
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .toggle-btn {
+    font-size: 13px;
+  }
+
+  .reply-text {
+    display: none;
+  }
+
+  .reply-btn {
+    padding: 4px; /* меньше отступов */
+  }
+}
