@@ -234,7 +234,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
           </div>
         ))}
 
-        <div className="buttons">
+        <div className="create-task-buttons">
           <button
             type="button"
             className="add-test-button"
