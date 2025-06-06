@@ -9,31 +9,6 @@ const DashboardPage = () => {
 
   const pendingCount = data?.count || 0;
 
-  useEffect(() => {
-    const fetchPendingCount = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/api/reports/count`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setPendingCount(data.count);
-        } else {
-          console.error("Ошибка при получении количества жалоб");
-        }
-      } catch (err) {
-        console.error("Ошибка при загрузке количества жалоб:", err);
-      }
-    };
-
-    if (user?.role === "admin") {
-      fetchPendingCount();
-    }
-  }, [token, user]);
-
   return (
     <div className="dashboard-container">
       <h1 className="dashboard-title">Добро пожаловать!</h1>

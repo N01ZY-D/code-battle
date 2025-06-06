@@ -177,7 +177,7 @@ const CreateTheoryPage = ({ slug, initialData }) => {
             placeholder="Напишите содержание в формате Markdown..."
           />
         </div>
-        <div className="buttons">
+        <div className="create-theory-buttons">
           <button type="submit" className="submit-button">
             {slug ? "Обновить теорию" : "Создать теорию"}
           </button>

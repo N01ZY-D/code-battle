@@ -8,8 +8,8 @@
 }
 
 .register-box {
-  width: 350px;
-  max-width: 100%;
+  width: 400px;
+  max-width: 600px;
   background-color: #2c2f36;
   padding: 30px;
   border-radius: 10px;
@@ -90,4 +90,29 @@
 
 .register-links a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .register-box {
+    padding: 20px;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .register-title {
+    font-size: 20px;
+  }
+
+  .register-group input {
+    font-size: 14px;
+  }
+
+  .register-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .register-links {
+    font-size: 13px;
+  }
 }

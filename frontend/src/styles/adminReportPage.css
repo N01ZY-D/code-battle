@@ -1,27 +1,33 @@
 .admin-report-container {
   width: 100%;
   max-width: 1000px;
-  margin: 100px 40px 40px;
+  margin: 100px auto 40px;
   padding: 20px;
   border-radius: 8px;
   background-color: #2c2f36;
 }
 
 .admin-report-title {
-  font-size: 32px;
+  font-size: 28px;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .status-filter {
   background-color: white;
   color: black;
-  padding: 5px;
+  padding: 10px;
   border-radius: 8px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
-  gap: 530px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 100px;
+}
+
+.status-filter label {
+  font-size: 16px;
 }
 
 .status-select {
@@ -60,16 +66,16 @@
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   width: 100%;
-  display: block;
 }
 
 .report-header {
-  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
+  flex-wrap: wrap;
+  gap: 10px;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .toggle-details {
@@ -91,15 +97,15 @@
   margin-top: 10px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-/* Статусы жалоб */
 .status-cell {
   font-weight: 600;
   text-transform: capitalize;
   border-radius: 6px;
-  padding: 10px;
+  padding: 6px 10px;
   color: black;
 }
 
@@ -115,7 +121,6 @@
   background-color: #dc3545;
 }
 
-/* Кнопка "Перейти" */
 .go-to-button {
   background-color: #282c34;
   border: 1px solid #cd853f;
@@ -133,7 +138,6 @@
   color: white;
 }
 
-/* Дополнительные классы */
 .monospace {
   font-family: monospace;
 }
@@ -150,5 +154,60 @@
 }
 
 .back-button {
-  flex: 0 0 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Адаптация под мобильные устройства */
+@media (max-width: 768px) {
+  .admin-report-container {
+    margin: 80px 16px 30px;
+    padding: 16px;
+  }
+
+  .admin-report-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .status-filter {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .status-action {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-select {
+    width: 100%;
+  }
+
+  .go-to-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-report-title {
+    font-size: 20px;
+  }
+
+  .status-select {
+    width: 100%;
+  }
+
+  .back-button {
+    width: 100%;
+  }
 }

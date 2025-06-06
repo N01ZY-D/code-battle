@@ -3,15 +3,3 @@
   padding: 0 1rem;
   max-width: 950px;
 }
-
-.main-task-content {
-  margin-top: 50px;
-  margin-bottom: 60px;
-}
-
-.code-editor {
-  border-radius: 10px;
-  background-color: #1e1e1e;
-  padding: 10px;
-  border-radius: 10px;
-}

@@ -24,6 +24,35 @@ code {
   border-radius: 10px;
 }
 
+.main-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.main-content table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+.main-content a {
+  word-break: break-word;
+}
+
+.main-content ul,
+.main-content ol {
+  padding-left: 1.5rem; /* отступ для маркеров */
+  word-break: break-word;
+}
+
+.main-content li {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 .main-content img {
   max-width: 100%; /* Ограничивает ширину изображения */
   height: auto; /* Сохраняет пропорции */
@@ -63,4 +92,37 @@ code {
   color: white;
   cursor: pointer;
   transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+@media (max-width: 768px) {
+  .upper-button-container,
+  .lower-button-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .upper-button-container button,
+  .lower-button-container button {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .main-content h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .main-content h3 {
+    text-align: center;
+    font-size: 1.2rem;
+  }
+
+  pre code {
+    font-size: 0.9rem;
+  }
+
+  .main-content {
+    margin-top: 140px;
+    padding: 0 12px;
+  }
 }

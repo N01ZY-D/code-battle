@@ -3,14 +3,15 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  padding: 20px;
+  max-width: 600px; /* ограничим максимальную ширину для десктопа */
+  margin: 0 auto;
 }
 
-.dashboard-title {
-  margin: 0;
-}
-
+.dashboard-title,
 .dashboard-description {
   margin: 0;
+  text-align: center;
 }
 
 .dashboard-buttons {
@@ -19,14 +20,16 @@
   flex-direction: row;
   gap: 10px;
   justify-content: center;
+  flex-wrap: wrap; /* чтобы кнопки переносились */
 }
 
 .dashboard-button {
-  flex: 0 0 48%; /* Каждая кнопка будет занимать 48% ширины */
+  flex: 0 0 48%; /* 2 кнопки в ряд */
+  margin-bottom: 10px;
 }
 
 .dashboard-button button {
-  width: 100%; /* Делаем кнопку на 100% ширины своего контейнера */
+  width: 100%;
   text-align: center;
   padding: 12px 0;
   color: white;
@@ -55,10 +58,12 @@
   flex-direction: row;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap; /* чтобы кнопки переносились */
 }
 
 .admin-panel button {
-  flex: 0 0 48%; /* Каждая кнопка будет занимать 48% ширины */
+  flex: 0 0 48%;
+  margin-bottom: 10px;
 }
 
 .notification-badge {
@@ -69,4 +74,21 @@
   padding: 2px 8px;
   margin-left: 8px;
   font-size: 0.8rem;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 100px;
+  }
+  .dashboard-buttons,
+  .admin-panel {
+    flex-direction: column;
+    gap: 5px;
+  }
+  .dashboard-button,
+  .admin-panel button {
+    flex: 1 1 100%; /* кнопки занимают всю ширину */
+    margin: 0;
+  }
 }

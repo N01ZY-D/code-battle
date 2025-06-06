@@ -4,6 +4,7 @@ import Avatar from "../components/Avatar";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import "../styles/profilePage.css";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 const ProfilePage = () => {
   const { user, login } = useContext(AuthContext);
@@ -13,6 +14,9 @@ const ProfilePage = () => {
   const [newNickname, setNewNickname] = useState("");
   const [newAvatar, setNewAvatar] = useState("");
   const [expandedTasks, setExpandedTasks] = useState({});
+
+  const { width } = useWindowSize();
+  const avatarSize = width <= 480 ? 156 : width <= 768 ? 240 : 324;
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -98,7 +102,7 @@ const ProfilePage = () => {
           <Avatar
             matrix={user.avatarMatrix}
             color={user.avatarColor}
-            size={324}
+            size={avatarSize}
           />
           <div className="profile-nickname-block">
             <p className="profile-label">Никнейм:</p>

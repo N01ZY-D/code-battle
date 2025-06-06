@@ -8,54 +8,75 @@ textarea {
 
 .create-theory-page {
   margin: 100px auto;
+  padding: 0 16px; /* добавим горизонтальные отступы для мобильных */
 }
 
 .page-title {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
 .theory-form {
-  width: 500px;
-  padding-top: 20px;
+  width: 600px;
+  max-width: 600px; /* ограничим ширину на десктопе */
+  margin: 0 auto; /* центрируем */
+  padding: 20px;
   padding-bottom: 50px;
   display: flex;
   flex-direction: column;
   gap: 15px;
   background-color: #2c2f36;
   border-radius: 8px;
-  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .form-group label {
   margin-bottom: 6px;
   font-weight: bold;
   font-size: 14px;
+  display: block;
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   padding: 10px;
   font-size: 16px;
   background-color: #323844;
   border: 1px solid #3f4552;
   border-radius: 8px;
+  color: white;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
   border-color: #646cff;
   outline: none;
+  background-color: #3b4150;
 }
 
-.buttons {
+.form-group option {
+  background-color: #2c2f36;
+  color: white;
+}
+
+.form-group option:disabled {
+  color: #777;
+}
+
+.create-theory-buttons {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   margin-top: 20px;
 }
 
-.submit-button {
+.submit-button,
+.back-button {
   padding: 10px 20px;
   font-size: 16px;
   border-radius: 8px;
@@ -70,32 +91,26 @@ textarea {
   background-color: #45a049;
 }
 
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #323844;
-  border: 1px solid #3f4552;
-  border-radius: 8px;
-  color: white;
-  appearance: none; /* убирает стандартный стиль */
-  cursor: pointer;
-  background-size: 10px 6px;
-  transition: border-color 0.3s;
+.back-button {
+  background-color: #cd853f;
 }
 
-.form-group select:focus {
-  border-color: #646cff;
-  outline: none;
-  background-color: #3b4150;
+.back-button:hover {
+  background-color: #b37430;
 }
 
-.form-group option {
-  background-color: #2c2f36;
-  color: white;
+.back-to-dashboard {
+  text-align: right;
 }
 
-/* Чтобы disabled option выглядела иначе */
-.form-group option:disabled {
-  color: #777;
+@media (max-width: 700px) {
+  .theory-form {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .create-theory-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
 }

@@ -172,3 +172,91 @@
   gap: 20px;
   margin-top: 0;
 }
+
+/* Адаптив для планшетов и мобильных устройств */
+@media (max-width: 768px) {
+  .admin-users-page {
+    margin: 120px 20px 20px;
+    padding: 16px;
+  }
+
+  .admin-title {
+    font-size: 20px;
+  }
+
+  .user-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .user-actions button {
+    width: 100%;
+  }
+
+  .edit-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-section input,
+  .edit-section select,
+  .edit-section button {
+    width: 100%;
+  }
+
+  .solutions-section {
+    max-height: none;
+    padding: 10px;
+  }
+
+  .solutions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .solution pre {
+    max-height: 200px;
+  }
+
+  .back-button {
+    width: 100%;
+  }
+
+  .avatar-wrapper {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-title {
+    font-size: 18px;
+  }
+
+  .user-nickname {
+    font-size: 15px;
+  }
+
+  .user-role,
+  .user-email {
+    font-size: 13px;
+  }
+
+  .solution pre {
+    font-size: 12px;
+  }
+
+  .solution-title {
+    font-size: 13px;
+  }
+
+  .solution-date {
+    font-size: 11px;
+  }
+}

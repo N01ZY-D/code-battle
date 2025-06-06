@@ -1,52 +1,42 @@
 .navbar {
-  position: fixed; /* Фиксированное положение */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100vw; /* Полная ширина экрана */
+  width: 100vw;
   display: flex;
-  justify-content: space-between; /* Разделяет элементы по краям */
+  justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
   background-color: #282c34;
   color: white;
-  z-index: 1000; /* Поверх всего */
+  z-index: 1000;
 }
 
-/* .admin-panel {
+.avatar-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  flex-direction: row;
+  justify-content: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-links-desktop {
+  display: flex;
+  align-items: center;
   gap: 10px;
-  margin-right: 20px;
-} */
-
-.nav-links {
-  display: flex;
-  gap: 10px; /* Расстояние между ссылками */
-}
-
-.user-links {
-  display: flex;
-  gap: 5px; /* Расстояние между ссылками */
-}
-
-.logout-btn {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 5px;
-  margin-left: auto;
-}
-
-.logout-btn:hover {
-  background-color: #ff1a1a;
 }
 
 .nav-button {
   color: white;
+  background-color: #000;
   border: none;
   padding: 8px 16px;
   font-size: 16px;
@@ -66,4 +56,92 @@
 
 .nav-button.exit:hover {
   background-color: #921111;
+}
+
+.burger {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Анимированная обёртка для мобильного меню */
+.mobile-menu-wrapper {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  background-color: #282c34;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  border-top: 1px solid #444;
+  z-index: 999;
+}
+
+.mobile-menu-wrapper.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mobile-menu {
+  background-color: #282c34;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #444;
+}
+
+.mobile-menu .nav-button {
+  width: 100%;
+  text-align: left;
+  padding-left: 20px;
+  font-size: 16px;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+  .nav-links-desktop {
+    display: none;
+  }
+
+  .burger {
+    display: block;
+  }
+}
+
+/* Ещё меньшие экраны */
+@media (max-width: 480px) {
+  .nav-button {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .mobile-menu .nav-button {
+    padding-left: 16px;
+  }
+
+  .burger {
+    font-size: 24px;
+  }
+}
+
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+/* Кнопки на всю ширину */
+.mobile-menu .nav-button {
+  width: 100%;
+  text-align: left;
+  padding-left: 20px;
+  font-size: 16px;
 }

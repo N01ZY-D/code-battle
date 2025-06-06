@@ -3,13 +3,15 @@
   justify-content: center;
   align-items: center;
   background-color: #282c34;
-  padding: 20px;
+  padding: 20px 20px;
   border-radius: 10px;
+  box-sizing: border-box;
+  margin: 40px 0;
 }
 
 .login-box {
-  width: 350px;
-  max-width: 100%;
+  width: 400px;
+  max-width: 600px;
   background-color: #2c2f36;
   padding: 30px;
   border-radius: 10px;
@@ -90,4 +92,30 @@
 
 .login-links a:hover {
   text-decoration: underline;
+}
+
+/* 🔽 Адаптация для мобильных устройств */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 20px;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .login-title {
+    font-size: 20px;
+  }
+
+  .login-group input {
+    font-size: 14px;
+  }
+
+  .login-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .login-links {
+    font-size: 13px;
+  }
 }
