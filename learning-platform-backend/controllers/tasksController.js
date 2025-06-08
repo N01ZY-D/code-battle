@@ -1,4 +1,5 @@
 const { VM } = require("vm2");
+const _ = require("lodash"); // для deep equality
 const Task = require("../models/Task");
 const User = require("../models/User");
 
@@ -31,131 +32,194 @@ const checkSolution = async (req, res) => {
     const { code } = req.body;
     const userId = req.user.id;
 
-    // Находим задание
+    console.log(
+      `[checkSolution] Received request for taskId: ${taskId}, userId: ${userId}`
+    );
+    console.log(`[checkSolution] User code:\n${code}`);
+
     const task = await Task.findById(taskId);
     if (!task) {
-      return res.status(404).json({ error: "Задание не найдено" });
+      console.warn(`[checkSolution] Task with ID ${taskId} not found.`);
+      return res.status(404).json({ error: "Task not found" });
     }
 
-    // Находим пользователя
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: "Пользователь не найден" });
+      console.warn(`[checkSolution] User with ID ${userId} not found.`);
+      return res.status(404).json({ error: "User not found" });
     }
 
-    const hasSolvedTaskBefore = user.solvedTasks.includes(taskId);
-
-    // Извлекаем имя функции
-    const functionNameMatch = code.match(
-      /(?:function|const|let|var)\s+(\w+)\s*=?\s*\(?/
-    );
-    if (!functionNameMatch) {
+    const functionName = task.functionName;
+    if (!functionName) {
+      console.error(
+        `[checkSolution] Function name for task ID ${taskId} is not specified.`
+      );
       return res
         .status(400)
-        .json({ error: "Не удалось найти объявление функции." });
+        .json({ error: "Task function name is not specified" });
     }
 
-    const functionName = functionNameMatch[1];
-    console.log("Определенное имя функции:", functionName);
+    // НОВОЕ: Получаем inputType из задачи, по умолчанию 'spread_args'
+    // Если inputType не указан в задаче, она будет обрабатываться как функция,
+    // принимающая несколько аргументов, распакованных из входного массива.
+    const inputType = task.inputType || "spread_args";
+
+    console.log(`[checkSolution] Function name to check: ${functionName}`);
+    console.log(`[checkSolution] Input type for this task: ${inputType}`);
+    console.log(`[checkSolution] Total tests: ${task.tests.length}`);
 
     let allTestsPassed = true;
     const failedTests = [];
 
+    // Iterate through each test case
     for (const test of task.tests) {
-      const { input, output } = test;
+      const inputArgs = test.input; // Can be anything (Mixed type)
+      const expectedOutput = test.output; // Can be anything (Mixed type)
 
-      // Универсальный парсинг аргументов
-      let inputArgs = input
-        .trim()
-        .split(/\s+/)
-        .map((arg) => {
-          if (!isNaN(arg)) return Number(arg);
-          return arg;
-        });
-
-      console.log(`Тест: Вход: ${input} → Ожидаемый выход: "${output}"`);
+      console.log(
+        `\n[checkSolution] --- Running test for input: ${JSON.stringify(
+          inputArgs
+        )} ---`
+      );
+      console.log(
+        `[checkSolution] Expected output: ${JSON.stringify(expectedOutput)}`
+      );
 
       const vm = new VM({
-        timeout: 1000,
-        sandbox: {},
+        timeout: 1000, // 1-second timeout
+        sandbox: {}, // Empty sandbox
       });
 
       try {
-        const userFunctionCode = `
-          ${code}
-          globalThis.${functionName} = ${functionName};
-        `;
+        // Execute user's code, which should declare the function
+        console.log(`[checkSolution] Executing user code in VM...`);
+        vm.run(code);
+        console.log(`[checkSolution] User code executed.`);
 
-        // Загружаем функцию
-        vm.run(userFunctionCode);
-
-        // Вызываем её
-        const result = vm.run(
-          `${functionName}(...${JSON.stringify(inputArgs)})`
+        // Get the function from the sandbox (globalThis)
+        const userFunction = vm.run(`globalThis.${functionName}`);
+        console.log(
+          `[checkSolution] Function obtained from VM: ${userFunction}`
         );
 
-        // Нормализуем результат и ожидаемый вывод
-        const normalizedExpected =
-          output === undefined || output === null ? "" : String(output).trim();
-        const normalizedResult =
-          result === undefined || result === null ? "" : String(result).trim();
+        // Check if it's actually a function
+        if (typeof userFunction !== "function") {
+          throw new Error(
+            `Function "${functionName}" is not correctly defined or is not a function.`
+          );
+        }
 
-        console.log("Результат выполнения:", normalizedResult);
+        let actualOutput;
+        // Determine how to call the function based on inputType
+        if (inputType === "spread_args") {
+          // If inputArgs is an array, spread its elements as arguments
+          // e.g., sum([3, 5]) becomes sum(3, 5)
+          if (Array.isArray(inputArgs)) {
+            console.log(
+              `[checkSolution] Calling function ${functionName} with spread arguments: ${JSON.stringify(
+                inputArgs
+              )}`
+            );
+            actualOutput = userFunction(...inputArgs);
+          } else {
+            // If inputArgs is not an array but inputType is 'spread_args',
+            // this implies it's a single argument not intended for spreading (e.g., a number for fib).
+            // Call it with the single argument directly.
+            console.warn(
+              `[checkSolution] Warning: 'spread_args' input type for a non-array input: ${JSON.stringify(
+                inputArgs
+              )}. Passing as a single argument.`
+            );
+            actualOutput = userFunction(inputArgs);
+          }
+        } else if (inputType === "single_arg") {
+          // If the entire inputArgs should be passed as one argument
+          // e.g., flattenArray([1, [2,3]]) becomes flattenArray([1, [2,3]])
+          console.log(
+            `[checkSolution] Calling function ${functionName} with single argument: ${JSON.stringify(
+              inputArgs
+            )}`
+          );
+          actualOutput = userFunction(inputArgs);
+        } else {
+          // Fallback for unknown inputType (shouldn't happen if enum is strict)
+          console.warn(
+            `[checkSolution] Unknown inputType: ${inputType}. Defaulting to 'spread_args' logic.`
+          );
+          if (Array.isArray(inputArgs)) {
+            actualOutput = userFunction(...inputArgs);
+          } else {
+            actualOutput = userFunction(inputArgs);
+          }
+        }
 
-        if (normalizedResult !== normalizedExpected) {
+        console.log(
+          `[checkSolution] Actual output: ${JSON.stringify(
+            actualOutput
+          )} (type: ${typeof actualOutput})`
+        );
+
+        // Deep comparison of results
+        if (!_.isEqual(actualOutput, expectedOutput)) {
+          console.log(`[checkSolution] Test FAILED. Mismatch.`);
           allTestsPassed = false;
           failedTests.push({
             _id: test._id,
-            input,
-            expected: normalizedExpected,
-            got: normalizedResult,
-            error: `Ожидался результат: "${normalizedExpected}", но получено: "${normalizedResult}"`,
+            input: inputArgs,
+            expected: expectedOutput,
+            got: actualOutput,
+            error: `Expected result: ${JSON.stringify(
+              expectedOutput
+            )}, but got: ${JSON.stringify(actualOutput)}`,
           });
+        } else {
+          console.log(`[checkSolution] Test PASSED. Results match.`);
         }
       } catch (err) {
-        console.error("Ошибка выполнения кода:", err);
+        console.error(
+          `[checkSolution] Error executing test for input ${JSON.stringify(
+            inputArgs
+          )}: ${err.message}`
+        );
+        allTestsPassed = false;
         failedTests.push({
           _id: test._id,
-          input,
-          error: `Ошибка выполнения: ${err.message}`,
+          input: inputArgs,
+          error: `Execution Error: ${err.message}`,
         });
-        allTestsPassed = false;
       }
     }
 
     if (allTestsPassed) {
-      // Если задача уже была решена, просто добавим новую версию решения
-      if (hasSolvedTaskBefore) {
-        user.solutions.push({
-          taskId,
-          code,
-          createdAt: new Date(),
-        });
-        await user.save();
-        return res.json({ success: true, message: "Правильный код!" });
+      console.log(
+        `[checkSolution] All tests passed for taskId: ${taskId}, userId: ${userId}.`
+      );
+      const hasSolvedTaskBefore = user.solvedTasks.includes(taskId);
+      user.solutions.push({ taskId, code, createdAt: new Date() });
+
+      if (!hasSolvedTaskBefore) {
+        user.solvedTasks.push(taskId);
+        user.solvedTasksCount += 1;
       }
 
-      // Первая успешная попытка
-      user.solvedTasks.push(taskId);
-      user.solvedTasksCount += 1;
-      user.solutions.push({
-        taskId,
-        code,
-        createdAt: new Date(),
-      });
       await user.save();
-
-      return res.json({ success: true, message: "Правильный код!" });
+      return res.json({ success: true, message: "Correct code!" });
     } else {
+      console.log(
+        `[checkSolution] Some tests failed for taskId: ${taskId}, userId: ${userId}.`
+      );
       return res.json({
         success: false,
-        message: "Неправильный код.",
+        message: "Incorrect code.",
         failedTests,
       });
     }
   } catch (error) {
-    console.error("Ошибка при проверке решения:", error);
-    res.status(500).json({ error: "Ошибка сервера" });
+    console.error(
+      `[checkSolution] Critical server error during solution check: ${error.message}`,
+      error
+    );
+    res.status(500).json({ error: "Server error" });
   }
 };
 

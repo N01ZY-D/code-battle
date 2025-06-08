@@ -8,12 +8,18 @@ const TaskSchema = new mongoose.Schema({
   markdownContent: { type: String, required: true },
   tests: [
     {
-      input: { type: String, required: true },
-      output: { type: String, required: true },
+      input: { type: mongoose.Schema.Types.Mixed, required: true }, // Изменено на Mixed
+      output: { type: mongoose.Schema.Types.Mixed, required: true }, // Изменено на Mixed
     },
   ],
   functionName: { type: String, required: true }, // Имя функции
   parameters: { type: String, required: true }, // Параметры функции
+  inputType: {
+    type: String,
+    enum: ["single_arg", "spread_args"], // 'single_arg' - один аргумент, 'spread_args' - распаковать массив в аргументы
+    default: "spread_args", // По умолчанию большинство функций принимают несколько аргументов
+    required: true,
+  },
   createdAt: { type: Date, default: Date.now },
   order: { type: Number, default: 0 },
 });
