@@ -17,12 +17,19 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
     markdownContent: "",
     functionName: "",
     parameters: "",
-    tests: [{ input: "", output: "" }],
+    inputType: "spread_args", // НОВОЕ: Добавляем inputType со значением по умолчанию
+    tests: [{ input: "", output: "" }], // Инициализируем как строки для полей ввода
   });
 
   useEffect(() => {
     if (initialData) {
-      setTaskData(initialData);
+      // При редактировании, если initialData.tests.input/output уже не строки,
+      // преобразуем их в JSON-строки для отображения в полях ввода
+      const formattedTests = initialData.tests.map((test) => ({
+        input: JSON.stringify(test.input),
+        output: JSON.stringify(test.output),
+      }));
+      setTaskData({ ...initialData, tests: formattedTests });
       setTimeout(() => {
         document.querySelectorAll("textarea").forEach((textarea) => {
           textarea.style.height = "auto";
@@ -45,7 +52,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
   const handleTestChange = (index, e) => {
     const { name, value } = e.target;
     const updatedTests = [...taskData.tests];
-    updatedTests[index][name] = value;
+    updatedTests[index][name] = value; // Здесь значение пока остается строкой
     setTaskData({ ...taskData, tests: updatedTests });
   };
 
@@ -66,6 +73,44 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
     e.preventDefault();
     if (!token) return alert("Нет токена, авторизуйтесь заново.");
 
+    // ПРЕОБРАЗОВАНИЕ ТЕСТОВ ПЕРЕД ОТПРАВКОЙ НА БЭКЕНД
+    const parsedTests = taskData.tests.map((test) => {
+      try {
+        // Пробуем распарсить input. Если это просто число или строка, JSON.parse не сработает.
+        // Используем более гибкий подход или стандартизируем ввод.
+        // Для простоты будем считать, что для чисел и булевых значений
+        // они введены без кавычек, а для строк - в кавычках.
+        let parsedInput;
+        let parsedOutput;
+
+        try {
+          parsedInput = JSON.parse(test.input);
+        } catch (error) {
+          parsedInput = test.input; // Если не JSON, оставляем как есть (например, для простых строк/чисел)
+        }
+
+        try {
+          parsedOutput = JSON.parse(test.output);
+        } catch (error) {
+          parsedOutput = test.output; // Если не JSON, оставляем как есть
+        }
+
+        return { input: parsedInput, output: parsedOutput };
+      } catch (error) {
+        alert(
+          `Ошибка парсинга теста: ${error.message}. Убедитесь, что ввод и вывод в формате JSON (для массивов, объектов) или прямые значения (для чисел, строк, булевых).`
+        );
+        throw new Error("Неверный формат теста"); // Останавливаем отправку
+      }
+    });
+
+    const dataToSend = {
+      ...taskData,
+      tests: parsedTests, // Отправляем преобразованные тесты
+    };
+    // Убираем поле parameters, если оно не используется на бэкенде для других целей
+    // delete dataToSend.parameters; // Если вы решили полностью убрать `parameters`
+
     try {
       const url =
         mode === "edit"
@@ -84,7 +129,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(taskData),
+        body: JSON.stringify(dataToSend), // Отправляем преобразованные данные
       });
 
       if (response.ok) {
@@ -192,16 +237,31 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="parameters">Параметры функции</label>
+          <label htmlFor="parameters">Параметры функции (через запятую)</label>
           <input
             id="parameters"
             type="text"
             name="parameters"
-            placeholder="Параметры функции"
+            placeholder="Например: a, b или str"
             value={taskData.parameters}
             onChange={handleChange}
             required
           />
+        </div>
+        <div className="form-group">
+          <label htmlFor="inputType">Тип входных данных для функции</label>
+          <select
+            id="inputType"
+            name="inputType"
+            value={taskData.inputType}
+            onChange={handleChange}
+            required
+          >
+            <option value="spread_args">Несколько аргументов (a, b, c)</option>
+            <option value="single_arg">
+              Один аргумент (например, массив целиком)
+            </option>
+          </select>
         </div>
 
         <h3 className="sub-title">Тесты</h3>
@@ -210,7 +270,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
             <input
               type="text"
               name="input"
-              placeholder="Входные данные"
+              placeholder="Вход (JSON: [3,5]; 8; 'строка')"
               value={test.input}
               onChange={(e) => handleTestChange(index, e)}
               required
@@ -218,7 +278,7 @@ const CreateTaskPage = ({ mode = "create", initialData = null }) => {
             <input
               type="text"
               name="output"
-              placeholder="Ожидаемый результат"
+              placeholder="Выход (JSON: 8; [1,2,3]; 'результат')"
               value={test.output}
               onChange={(e) => handleTestChange(index, e)}
               required
